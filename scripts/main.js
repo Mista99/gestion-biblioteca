@@ -8,6 +8,28 @@ let listBooks = [];
 const library = new Library(9981656156, "Lectulandia");
 
 // Función para cargar libros en la biblioteca
+function sendNewUser(newUser) {
+    fetch('http://localhost:3000/api/users', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newUser)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la solicitud POST');
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log('Respuesta del servidor:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
 async function getBooks() {
     try {
         const responseBooks = await fetch('./data/books.json');
@@ -23,7 +45,7 @@ async function getBooks() {
 // Función para cargar usuarios en la biblioteca
 async function getUsers() {
     try {
-        const responseUsers = await fetch('./data/users.json');
+        const responseUsers = await fetch('http://localhost:3000/api/users');
         const users = await responseUsers.json();
         listUsers = users;
         return listUsers;
@@ -61,21 +83,28 @@ function loadBooks(books) {
 // Función para cargar usuarios en la biblioteca
 function loadUsers(users) {
     users.forEach(userData => {
-        // Mapea las copias prestadas y crea objetos simples con los datos
-        const borrowedCopies = userData.borrowedCopies.map(copy => {
-            return { 
-                copyId: copy.copyId,
-                book: copy.book,
-                loanStatus: copy.loanStatus,
-                borrower: userData.name  // Asignamos el nombre del usuario como el prestatario
-            };
-        });
+        // Verifica si borrowedCopies está definido y es un array
+        if (userData.borrowedCopies && Array.isArray(userData.borrowedCopies)) {
+            // Mapea las copias prestadas y crea objetos simples con los datos
+            const borrowedCopies = userData.borrowedCopies.map(copy => {
+                return { 
+                    copyId: copy.copyId,
+                    book: copy.book,
+                    loanStatus: copy.loanStatus,
+                    borrower: userData.name  // Asignamos el nombre del usuario como el prestatario
+                };
+            });
 
-        const user = new User(userData.id, userData.name, userData.email);
-        user.borrowedCopies = borrowedCopies;
-        return library.addUser(user); // Agrega el usuario a la biblioteca
+            const user = new User(userData.id, userData.name, userData.email);
+            user.borrowedCopies = borrowedCopies;
+            library.addUser(user); // Agrega el usuario a la biblioteca
+        } else {
+            // Si borrowedCopies no está definido o no es un array
+            console.warn(`El usuario con ID ${userData.id} no tiene copias prestadas o el formato es incorrecto.`);
+        }
     });
 }
+
 
 // Función para renderizar la lista de libros
 function renderBooks(filtro = '') {
@@ -116,44 +145,44 @@ document.getElementById('add-user').addEventListener('click', () => {
         const user = {id: id, name: name, email: email};
         library.addUser(newUser);
         listUsers.push(user);
+
         
         console.log("Datos prueba:", library.users);
-        id.value = '';
-        name.value = '';
-        email.value = '';
-        renderUsers();
+        sendNewUser(newUser);
+        
     }
+    
 });
 
 // Evento para añadir un nuevo libro
-// document.getElementById('add-book').addEventListener('click', () => {
+document.getElementById('add-book').addEventListener('click', () => {
 
-//     const isbn = document.getElementById('input-isbn').value;
-//     const title = document.getElementById('input-title').value;
-//     const author = document.getElementById('input-author').value;
-//     const genre = document.getElementById('input-genre').value;
-//     const publisher = document.getElementById('input-publisher').value;
-//     const publicationYear = document.getElementById('input-publicationYear').value;
-//     const location = document.getElementById('input-location').value;
-//     const summary = document.getElementById('input-summary').value;
+    const isbn = document.getElementById('input-isbn').value;
+    const title = document.getElementById('input-title').value;
+    const author = document.getElementById('input-author').value;
+    const genre = document.getElementById('input-genre').value;
+    const publisher = document.getElementById('input-publisher').value;
+    const publicationYear = document.getElementById('input-publicationYear').value;
+    const location = document.getElementById('input-location').value;
+    const summary = document.getElementById('input-summary').value;
 
-//     if (isbn && title && author && publisher && publicationYear) {
-//         const newBook = new Book(isbn = isbn, title = title, author = author, genre = genre, publisher = publisher, publicationYear = publicationYear, location = location, summary = summary);
-//         library.addBook(newBook);
-//         listBooks.push(newBook);
+    if (isbn && title && author && publisher && publicationYear) {
+        const newBook = new Book(isbn = isbn, title = title, author = author, genre = genre, publisher = publisher, publicationYear = publicationYear, location = location, summary = summary);
+        library.addBook(newBook);
+        listBooks.push(newBook);
         
-//         console.log("Datos prueba:", library.books);
-//         isbn.value = '';
-//         title.value = '';
-//         author.value = '';
-//         genre.value = '';
-//         publisher.value = '';
-//         publicationYear.value = '';
-//         location.value = '';
-//         summary.value = '';
-//         renderUsers();
-//     }
-// });
+        console.log("Datos prueba:", library.books);
+        isbn.value = '';
+        title.value = '';
+        author.value = '';
+        genre.value = '';
+        publisher.value = '';
+        publicationYear.value = '';
+        location.value = '';
+        summary.value = '';
+        renderUsers();
+    }
+});
 // Filtrar usuarios por nombre
 document.getElementById('input-search-user').addEventListener('input', (event) => {
     renderUsers(event.target.value);
