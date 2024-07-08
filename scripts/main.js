@@ -5,88 +5,42 @@ import { BookCopy } from './BookCopy.js';
 
 let listUsers = [];
 let listBooks = [];
-// Importar datos de libros
+
+const library = new Library(9981656156, "Lectulandia");
+
+// Función para cargar libros en la biblioteca
 async function getBooks() {
     try {
-        // Cargar libros
         const responseBooks = await fetch('./data/books.json');
         const books = await responseBooks.json();
         listBooks = books;
-        return books;  // Devuelve los libros cargados
+        return books;
     } catch (error) {
-        console.error('Error al cargar datos:', error);
-        throw error;  // Re-lanza el error para manejarlo fuera de la función
+        console.error('Error al cargar datos de libros:', error);
+        throw error;
     }
 }
 
-async function getUsers(){
-    // Cargar usuarios
+// Función para cargar usuarios en la biblioteca
+async function getUsers() {
     try {
         const responseUsers = await fetch('./data/users.json');
         const users = await responseUsers.json();
-        // Asignar los usuarios cargados a la variable global
         listUsers = users;
         return users;
-
-    } 
-    catch (error) {
-        console.error('Error al cargar datos:', error);
-        throw error;  // Re-lanza el error para manejarlo fuera de la función
+    } catch (error) {
+        console.error('Error al cargar datos de usuarios:', error);
+        throw error;
     }
-
 }
 
-
-//Renderizar usuarios:
-function renderBooks(filtro = '') {
-    const lista = document.getElementById('book-list');
-    lista.innerHTML = ''; // Limpiamos la lista existente
-    
-    listBooks
-        .filter(book => book.title.toLowerCase().includes(filtro.toLowerCase()))
-        .forEach(book => {
-            const li = document.createElement('li');
-            li.textContent = `${book.isbn} - ${book.title} - ${book.author}`;
-            lista.appendChild(li);
-        });
-}
-function renderUsers(filtro = '') {
-    const lista = document.getElementById('user-list');
-    lista.innerHTML = ''; // Limpiamos la lista existente
-    
-    listUsers
-        .filter(user => user.name.toLowerCase().includes(filtro.toLowerCase()))
-        .forEach(user => {
-            const li = document.createElement('li');
-            li.textContent = `${user.name} - ${user.email}`;
-            lista.appendChild(li);
-        });
-}
-//initial data
-const library = new Library(9981656156, "Lectulandia");
-//Eventos
-// Añadir nuevo usuario (simulado localmente)
-document.getElementById('add-user').addEventListener('click', () => {
-    const id = document.getElementById('id-input').value;
-    const name = document.getElementById('name-input').value;
-    const email = document.getElementById('email-input').value;
-
-    if (id && name && email) {
-        const nuevoUsuario = User(id, name, email);
-            
-    }
-});
-
- 
-// Cargar datos JSON a cada clase
+// Función para cargar libros en la biblioteca
 function loadBooks(books) {
     const booksToAdd = books.map(bookData => {
-        // Mapea las copias de libros y crea instancias de BookCopy para cada una
         const copies = bookData.copies.map(copy => {
             return new BookCopy(copy.id, copy.status, copy.location, copy.borrower);
         });
 
-        // Crea una instancia de Book con las copias de libros mapeadas
         const book = new Book(
             bookData.isbn,
             bookData.title,
@@ -96,16 +50,17 @@ function loadBooks(books) {
             bookData.publicationYear,
             bookData.location,
             bookData.summary,
-            copies  // Asigna el array de instancias de BookCopy
+            copies
         );
-        
-        return library.addBook(book); // Devuelve el libro creado
+
+        library.addBook(book); // Agrega el libro a la biblioteca
+        return book;
     });
 
+    return Promise.all(booksToAdd); // Devuelve una promesa que resuelve con los libros agregados
 }
 
-
-// Función para añadir usuarios a la biblioteca
+// Función para cargar usuarios en la biblioteca
 function loadUsers(users) {
     const usersToAdd = users.map(userData => {
         const borrowedCopies = userData.borrowedCopies.map(copy => {
@@ -113,28 +68,71 @@ function loadUsers(users) {
                 copyId: copy.copyId,
                 book: copy.book,
                 loanStatus: copy.loanStatus,
-                borrower: userData.name  // Asignamos el nombre del usuario como el prestatario
+                borrower: userData.name
             };
         });
+
         const user = new User(userData.id, userData.name, userData.email);
         user.borrowedCopies = borrowedCopies;
-        return library.addUser(user);
+        library.addUser(user); // Agrega el usuario a la biblioteca
+        return user;
     });
+
+    return Promise.all(usersToAdd); // Devuelve una promesa que resuelve con los usuarios agregados
 }
 
+// Función para renderizar la lista de libros
+function renderBooks(filtro = '') {
+    const lista = document.getElementById('book-list');
+    lista.innerHTML = ''; // Limpia la lista existente
+    
+    listBooks
+        .filter(book => book.title.toLowerCase().includes(filtro.toLowerCase()))
+        .forEach(book => {
+            const li = document.createElement('li');
+            li.textContent = `${book.isbn} - ${book.title} - ${book.author}`;
+            lista.appendChild(li);
+        });
+}
 
-// Añadir libros y usuarios a la biblioteca
-// loadBooks(listBooks);
-// loadUsers(listUsers);
+// Función para renderizar la lista de usuarios
+function renderUsers(filtro = '') {
+    const lista = document.getElementById('user-list');
+    lista.innerHTML = ''; // Limpia la lista existente
+    
+    listUsers
+        .filter(user => user.name.toLowerCase().includes(filtro.toLowerCase()))
+        .forEach(user => {
+            const li = document.createElement('li');
+            li.textContent = `${user.name} - ${user.email}`;
+            lista.appendChild(li);
+        });
+}
 
+// Evento para añadir un nuevo usuario
+document.getElementById('add-user').addEventListener('click', () => {
+    const id = document.getElementById('input-id').value;
+    const name = document.getElementById('input-name').value;
+    const email = document.getElementById('input-email').value;
 
+    if (id && name && email) {
+        const newUser = new User(id, name, email); 
+        library.addUser(newUser);
+        listUsers.push(newUser); 
+        loadUsers(listUsers);
+        renderUsers();
+    }
+});
 
-
-// Inicializar la lista de usuarios cuando el DOM esté completamente cargado
+// Cargar datos iniciales cuando el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
-    getUsers().then(() => renderUsers()).then(() => loadUsers(listUsers));
-    getBooks().then(() => renderBooks()).then(() => loadBooks(listBooks));
-    // Mostrar la biblioteca en la consola
-    console.log(`Libros añadidos a ${library.name}:`, library.books);
-    console.log(`Usuarios añadidos a ${library.name}:`, library.users);
+    getUsers()
+        .then(users => loadUsers(users))
+        .then(() => renderUsers());
+
+    getBooks()
+        .then(books => loadBooks(books))
+        .then(() => renderBooks());
+
+    console.log("Datos cargados:", library.books, library.users);
 });
