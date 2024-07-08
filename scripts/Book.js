@@ -1,5 +1,5 @@
 export class Book {
-    constructor(isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary, copies = []) {
+    constructor(isbn, title, author, genre = "any", publisher, publicationYear, location ="any", loanStatus="available", summary="", copies = []) {
         this.isbn = isbn;
         this.title = title;
         this.author = author;

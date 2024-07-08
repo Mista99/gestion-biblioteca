@@ -76,28 +76,8 @@ nav {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
-@media (min-width: 768px) {
-    .menu {
-        font-size: 1.6rem;
-        display: flex;
-        justify-content: center;
-    }
-    main {
-        margin: 1rem auto;
-        display: flex;
-        width: 80%;
-        flex-wrap: wrap;
-    }
-    .content {
-        background-color: #fff;
-        padding: 2rem;
-        margin: 0.5rem;
-        border-radius: var(--border-radius);
-        height: auto;
-        flex: 1 1 calc(50% - 2rem); /* Ocupa el 50% del ancho menos el margen */ 
-    }
-}
-@media (min-width: 1100px) {
+
+@media (min-width: 1400px) {
     .menu {
         font-size: 1.6rem;
         list-style-type: none;
@@ -162,7 +142,13 @@ footer p {
     border-radius: var(--border-radius);
     margin-bottom: 1rem;
 }
-
+.content-list {
+    background-color: #fff;
+    padding: 3rem;
+    border: 1px solid #ccc;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+}
 .option form label {
     display: block;
     font-size: 1.6rem; /* 16px */

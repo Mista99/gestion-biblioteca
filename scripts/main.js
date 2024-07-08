@@ -5,7 +5,6 @@ import { BookCopy } from './BookCopy.js';
 
 let listUsers = [];
 let listBooks = [];
-
 const library = new Library(9981656156, "Lectulandia");
 
 // Función para cargar libros en la biblioteca
@@ -14,7 +13,7 @@ async function getBooks() {
         const responseBooks = await fetch('./data/books.json');
         const books = await responseBooks.json();
         listBooks = books;
-        return books;
+        return listBooks;
     } catch (error) {
         console.error('Error al cargar datos de libros:', error);
         throw error;
@@ -27,7 +26,7 @@ async function getUsers() {
         const responseUsers = await fetch('./data/users.json');
         const users = await responseUsers.json();
         listUsers = users;
-        return users;
+        return listUsers;
     } catch (error) {
         console.error('Error al cargar datos de usuarios:', error);
         throw error;
@@ -36,11 +35,13 @@ async function getUsers() {
 
 // Función para cargar libros en la biblioteca
 function loadBooks(books) {
-    const booksToAdd = books.map(bookData => {
+    books.forEach(bookData => {
+        // Mapea las copias de libros y crea instancias de BookCopy para cada una
         const copies = bookData.copies.map(copy => {
             return new BookCopy(copy.id, copy.status, copy.location, copy.borrower);
         });
 
+        // Crea una instancia de Book con las copias de libros mapeadas
         const book = new Book(
             bookData.isbn,
             bookData.title,
@@ -50,35 +51,30 @@ function loadBooks(books) {
             bookData.publicationYear,
             bookData.location,
             bookData.summary,
-            copies
+            copies  // Asigna el array de instancias de BookCopy
         );
 
-        library.addBook(book); // Agrega el libro a la biblioteca
-        return book;
+        return library.addBook(book); // Agrega el libro a la biblioteca
     });
-
-    return Promise.all(booksToAdd); // Devuelve una promesa que resuelve con los libros agregados
 }
 
 // Función para cargar usuarios en la biblioteca
 function loadUsers(users) {
-    const usersToAdd = users.map(userData => {
+    users.forEach(userData => {
+        // Mapea las copias prestadas y crea objetos simples con los datos
         const borrowedCopies = userData.borrowedCopies.map(copy => {
             return { 
                 copyId: copy.copyId,
                 book: copy.book,
                 loanStatus: copy.loanStatus,
-                borrower: userData.name
+                borrower: userData.name  // Asignamos el nombre del usuario como el prestatario
             };
         });
 
         const user = new User(userData.id, userData.name, userData.email);
         user.borrowedCopies = borrowedCopies;
-        library.addUser(user); // Agrega el usuario a la biblioteca
-        return user;
+        return library.addUser(user); // Agrega el usuario a la biblioteca
     });
-
-    return Promise.all(usersToAdd); // Devuelve una promesa que resuelve con los usuarios agregados
 }
 
 // Función para renderizar la lista de libros
@@ -116,23 +112,65 @@ document.getElementById('add-user').addEventListener('click', () => {
     const email = document.getElementById('input-email').value;
 
     if (id && name && email) {
-        const newUser = new User(id, name, email); 
+        const newUser = new User(id, name, email);
+        const user = {id: id, name: name, email: email};
         library.addUser(newUser);
-        listUsers.push(newUser); 
-        loadUsers(listUsers);
+        listUsers.push(user);
+        
+        console.log("Datos prueba:", library.users);
+        id.value = '';
+        name.value = '';
+        email.value = '';
         renderUsers();
     }
+});
+
+// Evento para añadir un nuevo libro
+// document.getElementById('add-book').addEventListener('click', () => {
+
+//     const isbn = document.getElementById('input-isbn').value;
+//     const title = document.getElementById('input-title').value;
+//     const author = document.getElementById('input-author').value;
+//     const genre = document.getElementById('input-genre').value;
+//     const publisher = document.getElementById('input-publisher').value;
+//     const publicationYear = document.getElementById('input-publicationYear').value;
+//     const location = document.getElementById('input-location').value;
+//     const summary = document.getElementById('input-summary').value;
+
+//     if (isbn && title && author && publisher && publicationYear) {
+//         const newBook = new Book(isbn = isbn, title = title, author = author, genre = genre, publisher = publisher, publicationYear = publicationYear, location = location, summary = summary);
+//         library.addBook(newBook);
+//         listBooks.push(newBook);
+        
+//         console.log("Datos prueba:", library.books);
+//         isbn.value = '';
+//         title.value = '';
+//         author.value = '';
+//         genre.value = '';
+//         publisher.value = '';
+//         publicationYear.value = '';
+//         location.value = '';
+//         summary.value = '';
+//         renderUsers();
+//     }
+// });
+// Filtrar usuarios por nombre
+document.getElementById('input-search-user').addEventListener('input', (event) => {
+    renderUsers(event.target.value);
+    
 });
 
 // Cargar datos iniciales cuando el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
     getUsers()
-        .then(users => loadUsers(users))
+        .then((users) => loadUsers(users))
         .then(() => renderUsers());
 
     getBooks()
-        .then(books => loadBooks(books))
+        .then((books) => loadBooks(books))
         .then(() => renderBooks());
 
     console.log("Datos cargados:", library.books, library.users);
+
+
 });
