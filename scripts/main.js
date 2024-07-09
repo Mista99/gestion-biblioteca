@@ -127,11 +127,11 @@ function loadUsers(users) {
     });
 }
 
-function renderBooks() {
+function renderBooks(filtro = '') {
     const lista = document.getElementById('book-list');
     lista.innerHTML = ''; // Limpia la lista existente
-
-    listBooks.forEach(book => {
+    
+    listBooks.filter(book => book.title.toLowerCase().includes(filtro.toLowerCase())).forEach(book => {
         const li = document.createElement('li');
         li.textContent = `${book.title} - ${book.author}`;
         li.classList.add('book-item'); // Añadir la clase 'book-item' al elemento li
@@ -185,10 +185,45 @@ function renderUsers(filtro = '') {
         .forEach(user => {
             const li = document.createElement('li');
             li.textContent = `${user.name} - ${user.email}`;
+            li.classList.add('user-item'); // Añadir la clase 'book-item' al elemento li
+            li.id = `user-${user.id}`; // Añadir un id único basado en el ISBN del libro
+            li.addEventListener('click', () => toggleUserDetails(user, li)); // Agregar evento click
+    
             lista.appendChild(li);
         });
+    
+}
+function toggleUserDetails(user, clickedLi) {
+    const detailsId = `details-${user.id}`;
+    const existingDetails = document.getElementById(detailsId);
+
+    if (existingDetails) {
+        // Si los detalles ya están visibles, los ocultamos
+        existingDetails.remove();
+    } else {
+        // Si los detalles no están visibles, los mostramos
+        const detailsContainer = createUserDetails(user);
+        detailsContainer.id = detailsId;
+        clickedLi.insertAdjacentElement('afterend', detailsContainer);
+    }
 }
 
+function createUserDetails(user) {
+    const detailsContainer = document.createElement('div');
+    detailsContainer.classList.add('user-details-container');
+
+    const detailsList = document.createElement('ul');
+
+    // Iterar sobre las propiedades del libro y agregarlas como elementos de lista
+    for (const [key, value] of Object.entries(user)) {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${key}: ${value}`;
+        detailsList.appendChild(listItem);
+    }
+
+    detailsContainer.appendChild(detailsList);
+    return detailsContainer;
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Evento para añadir un nuevo usuario
