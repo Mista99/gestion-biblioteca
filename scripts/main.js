@@ -127,26 +127,51 @@ function loadUsers(users) {
     });
 }
 
-
-// Función para renderizar la lista de libros
-function renderBooks(filtro = '') {
+function renderBooks() {
     const lista = document.getElementById('book-list');
     lista.innerHTML = ''; // Limpia la lista existente
 
-    listBooks
-        .filter(book => {
-            if (book.title) {
-                return book.title.toLowerCase().includes(filtro.toLowerCase());
-            } else {
-                console.warn('Título del libro no definido:', book);
-                return false;
-            }
-        })
-        .forEach(book => {
-            const li = document.createElement('li');
-            li.textContent = `${book.title} - ${book.author}`;
-            lista.appendChild(li);
-        });
+    listBooks.forEach(book => {
+        const li = document.createElement('li');
+        li.textContent = `${book.title} - ${book.author}`;
+        li.classList.add('book-item'); // Añadir la clase 'book-item' al elemento li
+        li.id = `book-${book.isbn}`; // Añadir un id único basado en el ISBN del libro
+        li.addEventListener('click', () => toggleBookDetails(book, li)); // Agregar evento click
+
+        lista.appendChild(li);
+    });
+}
+
+function toggleBookDetails(book, clickedLi) {
+    const detailsId = `details-${book.isbn}`;
+    const existingDetails = document.getElementById(detailsId);
+
+    if (existingDetails) {
+        // Si los detalles ya están visibles, los ocultamos
+        existingDetails.remove();
+    } else {
+        // Si los detalles no están visibles, los mostramos
+        const detailsContainer = createBookDetails(book);
+        detailsContainer.id = detailsId;
+        clickedLi.insertAdjacentElement('afterend', detailsContainer);
+    }
+}
+
+function createBookDetails(book) {
+    const detailsContainer = document.createElement('div');
+    detailsContainer.classList.add('book-details-container');
+
+    const detailsList = document.createElement('ul');
+
+    // Iterar sobre las propiedades del libro y agregarlas como elementos de lista
+    for (const [key, value] of Object.entries(book)) {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${key}: ${value}`;
+        detailsList.appendChild(listItem);
+    }
+
+    detailsContainer.appendChild(detailsList);
+    return detailsContainer;
 }
 
 
