@@ -1,5 +1,5 @@
 export class Book {
-    constructor(isbn, title, author, genre = "any", publisher, publicationYear, location ="any", loanStatus="available", summary="", copies = []) {
+    constructor(isbn, title, author, genre = "any", publisher, publicationYear = Date, location ="any", summary="", copies = []) {
         this.isbn = isbn;
         this.title = title;
         this.author = author;
@@ -9,6 +9,7 @@ export class Book {
         this.location = location;
         this.summary = summary;
         this.copies = copies; // Array to hold individual copies
+        this.loanStatus = "available";
     }
 
     addCopy() {

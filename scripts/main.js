@@ -8,6 +8,27 @@ let listBooks = [];
 const library = new Library(9981656156, "Lectulandia");
 
 // Función para cargar libros en la biblioteca
+function sendNewBook (newBook) {
+    fetch('http://localhost:3000/api/books', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newBook)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la solicitud POST para Books');
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log('Respuesta del servidor:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 function sendNewUser(newUser) {
     fetch('http://localhost:3000/api/users', {
         method: 'POST',
@@ -18,7 +39,7 @@ function sendNewUser(newUser) {
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error('Error en la solicitud POST');
+            throw new Error('Error en la solicitud POST para Users');
         }
         return response.text();
     })
@@ -32,7 +53,7 @@ function sendNewUser(newUser) {
 
 async function getBooks() {
     try {
-        const responseBooks = await fetch('./data/books.json');
+        const responseBooks = await fetch('http://localhost:3000/api/books');
         const books = await responseBooks.json();
         listBooks = books;
         return listBooks;
@@ -58,10 +79,10 @@ async function getUsers() {
 // Función para cargar libros en la biblioteca
 function loadBooks(books) {
     books.forEach(bookData => {
-        // Mapea las copias de libros y crea instancias de BookCopy para cada una
-        const copies = bookData.copies.map(copy => {
+        // Verifica que copies esté definido y sea un array antes de intentar mapearlo
+        const copies = (bookData.copies && Array.isArray(bookData.copies)) ? bookData.copies.map(copy => {
             return new BookCopy(copy.id, copy.status, copy.location, copy.borrower);
-        });
+        }) : [];
 
         // Crea una instancia de Book con las copias de libros mapeadas
         const book = new Book(
@@ -79,6 +100,7 @@ function loadBooks(books) {
         return library.addBook(book); // Agrega el libro a la biblioteca
     });
 }
+
 
 // Función para cargar usuarios en la biblioteca
 function loadUsers(users) {
@@ -110,15 +132,23 @@ function loadUsers(users) {
 function renderBooks(filtro = '') {
     const lista = document.getElementById('book-list');
     lista.innerHTML = ''; // Limpia la lista existente
-    
+
     listBooks
-        .filter(book => book.title.toLowerCase().includes(filtro.toLowerCase()))
+        .filter(book => {
+            if (book.title) {
+                return book.title.toLowerCase().includes(filtro.toLowerCase());
+            } else {
+                console.warn('Título del libro no definido:', book);
+                return false;
+            }
+        })
         .forEach(book => {
             const li = document.createElement('li');
-            li.textContent = `${book.isbn} - ${book.title} - ${book.author}`;
+            li.textContent = `${book.title} - ${book.author}`;
             lista.appendChild(li);
         });
 }
+
 
 // Función para renderizar la lista de usuarios
 function renderUsers(filtro = '') {
@@ -134,61 +164,69 @@ function renderUsers(filtro = '') {
         });
 }
 
-// Evento para añadir un nuevo usuario
-document.getElementById('add-user').addEventListener('click', () => {
-    const id = document.getElementById('input-id').value;
-    const name = document.getElementById('input-name').value;
-    const email = document.getElementById('input-email').value;
 
-    if (id && name && email) {
-        const newUser = new User(id, name, email);
-        const user = {id: id, name: name, email: email};
-        library.addUser(newUser);
-        listUsers.push(user);
+document.addEventListener('DOMContentLoaded', () => {
+    // Evento para añadir un nuevo usuario
+    document.getElementById('add-user').addEventListener('click', () => {
+        const id = document.getElementById('input-id').value;
+        const name = document.getElementById('input-name').value;
+        const email = document.getElementById('input-email').value;
 
+        if (id && name && email) {
+            const newUser = new User(id, name, email);
+            const user = {id: id, name: name, email: email};
+            library.addUser(newUser);
+            listUsers.push(user);
+
+            
+            console.log("Datos prueba:", library.users);
+            sendNewUser(newUser);
+            
+        }
         
-        console.log("Datos prueba:", library.users);
-        sendNewUser(newUser);
-        
+    });
+    // add new book
+    const addButton = document.getElementById('add-book');
+    //sin el if me genera un error
+    if (addButton) {
+        addButton.addEventListener('click', () => {
+            const isbn = document.getElementById('input-isbn').value;
+            const title = document.getElementById('input-title').value;
+            const author = document.getElementById('input-author').value;
+            const genre = document.getElementById('input-genre').value;
+            const publisher = document.getElementById('input-publisher').value;
+            const publicationYear = document.getElementById('input-publicationYear').value;
+            const location = document.getElementById('input-location').value;
+            const summary = document.getElementById('input-summary').value;
+
+            // Verificar que todos los campos obligatorios estén completos
+            if (isbn && title && author && publisher && publicationYear) {
+                const newBook = new Book(isbn, title, author, genre, publisher, publicationYear, location, summary);
+                library.addBook(newBook);
+                listBooks.push(newBook);
+                console.log("Datos de prueba:", library.books);
+                renderBooks();
+                sendNewBook(newBook);
+            } else {
+                console.error('Por favor, completa todos los campos obligatorios.');
+            }
+        });
+    } else {
+        console.error('El botón "add-book" no fue encontrado en el DOM.');
     }
-    
 });
+
 
 // Evento para añadir un nuevo libro
-document.getElementById('add-book').addEventListener('click', () => {
-
-    const isbn = document.getElementById('input-isbn').value;
-    const title = document.getElementById('input-title').value;
-    const author = document.getElementById('input-author').value;
-    const genre = document.getElementById('input-genre').value;
-    const publisher = document.getElementById('input-publisher').value;
-    const publicationYear = document.getElementById('input-publicationYear').value;
-    const location = document.getElementById('input-location').value;
-    const summary = document.getElementById('input-summary').value;
-
-    if (isbn && title && author && publisher && publicationYear) {
-        const newBook = new Book(isbn = isbn, title = title, author = author, genre = genre, publisher = publisher, publicationYear = publicationYear, location = location, summary = summary);
-        library.addBook(newBook);
-        listBooks.push(newBook);
-        
-        console.log("Datos prueba:", library.books);
-        isbn.value = '';
-        title.value = '';
-        author.value = '';
-        genre.value = '';
-        publisher.value = '';
-        publicationYear.value = '';
-        location.value = '';
-        summary.value = '';
-        renderUsers();
-    }
-});
 // Filtrar usuarios por nombre
 document.getElementById('input-search-user').addEventListener('input', (event) => {
     renderUsers(event.target.value);
     
 });
-
+document.getElementById('input-search-book').addEventListener('input', (event) => {
+    renderBooks(event.target.value);
+    
+});
 // Cargar datos iniciales cuando el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
     getUsers()
