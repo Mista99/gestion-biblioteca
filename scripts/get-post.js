@@ -90,9 +90,6 @@ async function deleteBook(isbn) {
         if (bookIndex !== -1) {
             listBooks.splice(bookIndex, 1);
         }
-
-        // Volver a renderizar la lista de libros
-        renderBooks();
     } catch (error) {
         console.error('Error al eliminar el libro:', error);
     }
