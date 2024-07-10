@@ -3,79 +3,10 @@ import { User } from './User.js';
 import { Book } from './Book.js';
 import { BookCopy } from './BookCopy.js';
 import {createEditIcon, createTrashIcon} from './buttons.js';
+import {listUsers, listBooks} from './config.js'
+import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook} from './get-post.js';
 
-let listUsers = [];
-let listBooks = [];
 const library = new Library(9981656156, "Lectulandia");
-
-// Función para cargar libros en la biblioteca
-function sendNewBook (newBook) {
-    fetch('http://localhost:3000/api/books', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newBook)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la solicitud POST para Books');
-        }
-        return response.text();
-    })
-    .then(data => {
-        console.log('Respuesta del servidor:', data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-function sendNewUser(newUser) {
-    fetch('http://localhost:3000/api/users', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newUser)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la solicitud POST para Users');
-        }
-        return response.text();
-    })
-    .then(data => {
-        console.log('Respuesta del servidor:', data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-async function getBooks() {
-    try {
-        const responseBooks = await fetch('http://localhost:3000/api/books');
-        const books = await responseBooks.json();
-        listBooks = books;
-        return listBooks;
-    } catch (error) {
-        console.error('Error al cargar datos de libros:', error);
-        throw error;
-    }
-}
-
-// Función para cargar usuarios en la biblioteca
-async function getUsers() {
-    try {
-        const responseUsers = await fetch('http://localhost:3000/api/users');
-        const users = await responseUsers.json();
-        listUsers = users;
-        return listUsers;
-    } catch (error) {
-        console.error('Error al cargar datos de usuarios:', error);
-        throw error;
-    }
-}
 
 // Función para cargar libros en la biblioteca
 function loadBooks(books) {
@@ -149,6 +80,13 @@ function renderBooks(filtro = '') {
         li.appendChild(iconContainer);
 
         lista.appendChild(li);
+        //evendo eliminar
+        trashIcon.addEventListener('click', (e) => {
+            console.log(book.isbn)
+            e.stopPropagation(); // Evita que el evento se propague al li
+            deleteBook(book.isbn);
+            renderBooks();
+        });
     });
 }
 
@@ -216,7 +154,6 @@ function renderUsers(filtro = '') {
             
             // Añadir el ícono de eliminación al li
             li.appendChild(iconContainer);
-    
             lista.appendChild(li);
         });
     
