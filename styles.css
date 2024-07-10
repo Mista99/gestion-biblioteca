@@ -218,7 +218,10 @@ input {
 .book-item {
     cursor: pointer; /* Hace que el cursor sea un puntero al pasar sobre el elemento de lista */
     padding: 0.5rem;
-    transition: background-color 0.3s ease; /* Transición suave para el cambio de color de fondo */
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .book-item:hover {
@@ -258,7 +261,11 @@ input {
 .user-item {
     cursor: pointer; /* Hace que el cursor sea un puntero al pasar sobre el elemento de lista */
     padding: 0.5rem;
-    transition: background-color 0.3s ease; /* Transición suave para el cambio de color de fondo */
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+     /* Transición suave para el cambio de color de fondo */
 }
 
 .user-item:hover {
@@ -274,7 +281,7 @@ input {
 /* Estilos para la lista de detalles dentro del contenedor */
 .user-details-container ul {
     list-style-type: none; /* Quita los puntos de la lista */
-    padding: 0;
+    padding: 0;    
 }
 
 /* Estilos para los elementos de la lista de detalles */
@@ -282,4 +289,14 @@ input {
     font-size: 1.4rem; /* Tamaño del texto de los detalles */
     color: #333; /* Color del texto */
     margin-bottom: 0.5rem; /* Espaciado inferior entre elementos de lista */
+}
+/*Estilos delete*/
+.details-item {
+    cursor: pointer; 
+    padding: 0.5rem;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
 }

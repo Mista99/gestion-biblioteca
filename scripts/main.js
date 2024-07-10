@@ -2,6 +2,7 @@ import { Library } from './Library.js';
 import { User } from './User.js';
 import { Book } from './Book.js';
 import { BookCopy } from './BookCopy.js';
+import {createEditIcon, createTrashIcon} from './buttons.js';
 
 let listUsers = [];
 let listBooks = [];
@@ -138,6 +139,15 @@ function renderBooks(filtro = '') {
         li.id = `book-${book.isbn}`; // Añadir un id único basado en el ISBN del libro
         li.addEventListener('click', () => toggleBookDetails(book, li)); // Agregar evento click
 
+        // Crear el contenedor del ícono de eliminación
+        const iconContainer = document.createElement('span');
+        iconContainer.classList.add('trash-icon-container');
+        const trashIcon = createTrashIcon();
+        iconContainer.appendChild(trashIcon);
+        
+        // Añadir el ícono de eliminación al li
+        li.appendChild(iconContainer);
+
         lista.appendChild(li);
     });
 }
@@ -166,14 +176,22 @@ function createBookDetails(book) {
     // Iterar sobre las propiedades del libro y agregarlas como elementos de lista
     for (const [key, value] of Object.entries(book)) {
         const listItem = document.createElement('li');
+        listItem.classList.add('details-item');
         listItem.textContent = `${key}: ${value}`;
         detailsList.appendChild(listItem);
+
+        // Crear el contenedor del ícono de editar
+        const iconContainer = document.createElement('span');
+        iconContainer.classList.add('edit-icon-container');
+        const editIcon = createEditIcon();
+        iconContainer.appendChild(editIcon);
+        // Añadir el ícono de editar al li
+        listItem.appendChild(iconContainer);
     }
 
     detailsContainer.appendChild(detailsList);
     return detailsContainer;
 }
-
 
 // Función para renderizar la lista de usuarios
 function renderUsers(filtro = '') {
@@ -187,7 +205,17 @@ function renderUsers(filtro = '') {
             li.textContent = `${user.name} - ${user.email}`;
             li.classList.add('user-item'); // Añadir la clase 'book-item' al elemento li
             li.id = `user-${user.id}`; // Añadir un id único basado en el ISBN del libro
+            
             li.addEventListener('click', () => toggleUserDetails(user, li)); // Agregar evento click
+
+            // Crear el contenedor del ícono de eliminación
+            const iconContainer = document.createElement('span');
+            iconContainer.classList.add('trash-icon-container');
+            const trashIcon = createTrashIcon();
+            iconContainer.appendChild(trashIcon);
+            
+            // Añadir el ícono de eliminación al li
+            li.appendChild(iconContainer);
     
             lista.appendChild(li);
         });
@@ -211,14 +239,21 @@ function toggleUserDetails(user, clickedLi) {
 function createUserDetails(user) {
     const detailsContainer = document.createElement('div');
     detailsContainer.classList.add('user-details-container');
-
     const detailsList = document.createElement('ul');
 
     // Iterar sobre las propiedades del libro y agregarlas como elementos de lista
     for (const [key, value] of Object.entries(user)) {
         const listItem = document.createElement('li');
+        listItem.classList.add('details-item');
         listItem.textContent = `${key}: ${value}`;
         detailsList.appendChild(listItem);
+        // Crear el contenedor del ícono de editar
+        const iconContainer = document.createElement('span');
+        iconContainer.classList.add('edit-icon-container');
+        const editIcon = createEditIcon();
+        iconContainer.appendChild(editIcon);
+        // Añadir el ícono de editar al li
+        listItem.appendChild(iconContainer);
     }
 
     detailsContainer.appendChild(detailsList);
