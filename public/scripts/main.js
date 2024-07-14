@@ -4,7 +4,7 @@ import { Book } from './Book.js';
 import { BookCopy } from './BookCopy.js';
 import {createEditIcon, createTrashIcon} from './buttons.js';
 import {listUsers, listBooks} from './config.js'
-import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook} from './get-post.js';
+import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook} from './apiServices.js';
 
 const library = new Library(9981656156, "Lectulandia");
 
