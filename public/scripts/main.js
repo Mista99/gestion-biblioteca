@@ -4,7 +4,7 @@ import { Book } from './Book.js';
 import { BookCopy } from './BookCopy.js';
 import {createEditIcon, createTrashIcon} from './buttons.js';
 import {listUsers, listBooks} from './config.js'
-import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, updateUserName, updateUserEmail} from './apiServices.js';
+import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail} from './apiServices.js';
 
 const library = new Library(9981656156, "Lectulandia");
 
@@ -155,6 +155,12 @@ function renderUsers(filtro = '') {
             // Añadir el ícono de eliminación al li
             li.appendChild(iconContainer);
             lista.appendChild(li);
+            //evento eliminar
+            trashIcon.addEventListener('click', (e) => {
+                // e.stopPropagation(); // Evita que el evento se propague al li
+                deleteUser(user.id);
+                renderUsers();
+            });
         });
 }
 

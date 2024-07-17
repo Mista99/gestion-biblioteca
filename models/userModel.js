@@ -10,7 +10,7 @@ class User {
     static create(user, callback) {
         const { id, name, email } = user;
         const sql = 'INSERT INTO users (id, name, email) VALUES (?, ?, ?)';
-        db.run(sql, [name, email], function(err) {
+        db.run(sql, [id, name, email], function(err) {
             if (err) {
                 return callback(err);
             }
@@ -48,9 +48,9 @@ class User {
             callback(null, { changes: this.changes });
         });
     }
-    static delete(isbn, callback) {
-        const sql = 'DELETE FROM users WHERE isbn = ?';
-        db.run(sql, [isbn], function(err) {
+    static delete(id, callback) {
+        const sql = 'DELETE FROM users WHERE id = ?';
+        db.run(sql, [id], function(err) {
             if (err) {
                 return callback(err);
             }  

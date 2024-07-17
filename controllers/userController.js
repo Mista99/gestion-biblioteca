@@ -46,17 +46,8 @@ exports.getAllUsers = (req, res) => {
         res.json(users);
     });
 };
-exports.deleteUser = (req, res) => {
-    User.delete((err) => {
-        if (err) {
-            return res.status(500).send('Error deleting user');
-        }
-        res.status(200).send('User deleted successfully');
-    });
-};
 
 exports.deleteAllUsers = (req, res) => {
-    isbn = req.body.isbn;
     User.deleteAll((err) => {
         if (err) {
             return res.status(500).send('Error deleting users');
@@ -64,3 +55,12 @@ exports.deleteAllUsers = (req, res) => {
         res.status(200).send('All users deleted successfully');
     });
 };
+exports.deleteUser = (req, res) => {
+    User.delete(req.params.id, (err) => {
+        if (err) {
+            return res.status(500).send('Error deleting user');
+            }
+            res.status(200).send('User deleted successfully');
+        });
+
+}

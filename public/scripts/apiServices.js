@@ -1,5 +1,5 @@
 import { listUsers, listBooks } from './config.js';
-export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, updateUserName, updateUserEmail };
+export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail };
 
 // Función para cargar libros en la biblioteca
 function sendNewBook(newBook) {
@@ -121,6 +121,28 @@ async function deleteBook(isbn) {
         }
     } catch (error) {
         console.error('Error al eliminar el libro:', error);
+    }
+}
+async function deleteUser(id) {
+    try {
+        const response = await fetch(`http://localhost:3000/api/users/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al eliminar el usuario del servidor');
+        }
+
+        // Eliminar el libro de listBooks
+        const userIndex = listUsers.findIndex(user => user.id === id);
+        if (userIndex !== -1) {
+            listUsers.splice(userIndex, 1);
+        }
+    } catch (error) {
+        console.error('Error al eliminar el usuario:', error);
     }
 }
 

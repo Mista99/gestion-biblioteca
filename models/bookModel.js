@@ -52,7 +52,7 @@ class Book {
                 return callback(err);
                 }
                 callback(null);
-                });
+            });
     }
 
     // Otros métodos para actualizar, eliminar por isbn, etc.
