@@ -25,7 +25,23 @@ class Book {
             callback(null);
         });
     }
-
+    static update(isbn, prop, value, callback) {
+        //el siguiente comando, ak tener una variable en el SQL puede provocar una inyeccion SQL
+        const sql = `UPDATE Books SET ${prop} = ? WHERE isbn = ?`;
+    
+        // Log de depuración
+        console.log(`Executing SQL: ${sql}`);
+        console.log(`With values: [${value}, ${isbn}]`);
+    
+        db.run(sql, [value, isbn], function(err) {
+            if (err) {
+                console.error('Database error:', err);
+                return callback(err);
+            }
+            callback(null);
+        });
+    }
+        
     static findAll(callback) {
         const sql = 'SELECT * FROM Books';
         db.all(sql, [], (err, rows) => {

@@ -4,7 +4,7 @@ import { Book } from './Book.js';
 import { BookCopy } from './BookCopy.js';
 import {createEditIcon, createTrashIcon} from './buttons.js';
 import {listUsers, listBooks} from './config.js'
-import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail} from './apiServices.js';
+import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail, updateBookProp} from './apiServices.js';
 
 const library = new Library(9981656156, "Lectulandia");
 
@@ -117,14 +117,18 @@ function createBookDetails(book) {
         listItem.classList.add('details-item');
         listItem.textContent = `${key}: ${value}`;
         detailsList.appendChild(listItem);
-
-        // Crear el contenedor del ícono de editar
-        const iconContainer = document.createElement('span');
-        iconContainer.classList.add('edit-icon-container');
-        const editIcon = createEditIcon();
-        iconContainer.appendChild(editIcon);
-        // Añadir el ícono de editar al li
-        listItem.appendChild(iconContainer);
+        if (key != "isbn") {
+            // Crear el contenedor del ícono de editar
+            const iconContainer = document.createElement('span');
+            iconContainer.classList.add('edit-icon-container');
+            const editIcon = createEditIcon();
+            iconContainer.appendChild(editIcon);
+            // Añadir el ícono de editar al li
+            listItem.appendChild(iconContainer);
+            editIcon.addEventListener('click', () => {
+                toggleBookEdit(book, listItem, key);
+            });
+        }
     }
 
     detailsContainer.appendChild(detailsList);
@@ -177,7 +181,8 @@ function toggleUserDetails(user, clickedLi) {
         detailsContainer.id = detailsId;
         clickedLi.insertAdjacentElement('afterend', detailsContainer);
     }
-}function toggleUserEdit(user, li, key) {
+}
+function toggleUserEdit(user, li, key) {
     // Si ya está en modo edición, lo desactivamos
     if (li.classList.contains('editing')) {
         li.classList.remove('editing');
@@ -226,6 +231,49 @@ function toggleUserDetails(user, clickedLi) {
         
     }
 }
+function toggleBookEdit(book, li, key) {
+    // Si ya está en modo edición, lo desactivamos
+    if (li.classList.contains('editing')) {
+        li.classList.remove('editing');
+        li.innerHTML = `${book[key]}`;
+
+        // Restaurar el ícono de edición
+        const iconContainer = document.createElement('span');
+        iconContainer.classList.add('edit-icon-container');
+        const editIcon = createEditIcon();
+        iconContainer.appendChild(editIcon);
+        li.appendChild(iconContainer);
+        
+    } else {
+        // Cambiar a modo edición
+        li.classList.add('editing');
+        li.innerHTML = `
+            <input type="text" id="edit-${book[key]}" value="${book[key]}">
+        `;
+
+        // Añadir el botón de guardar
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Guardar';
+        saveButton.addEventListener('click', () => {
+            const updateLi = document.getElementById(`edit-${book[key]}`).value;
+
+            // Actualizar los datos del libro
+            book[key] = updateLi;
+            updateBookProp(book.isbn, key, book[key]);
+            // Actualizar la visualización y volver al modo de vista
+            renderUsers();
+        });
+        li.appendChild(saveButton);
+
+        // Restaurar el ícono de edición
+        const iconContainer = document.createElement('span');
+        iconContainer.classList.add('edit-icon-container');
+        const editIcon = createEditIcon();
+        iconContainer.appendChild(editIcon);
+        li.appendChild(iconContainer);
+        
+    }
+}
 function createUserDetails(user) {
     const detailsContainer = document.createElement('div');
     detailsContainer.classList.add('user-details-container');
@@ -238,17 +286,20 @@ function createUserDetails(user) {
         listItem.classList.add('details-item');
         listItem.textContent = `${key}: ${value}`;
         detailsList.appendChild(listItem);
-        // Crear el contenedor del ícono de editar
-        const iconContainer = document.createElement('span');
-        iconContainer.classList.add('edit-icon-container');
-        const editIcon = createEditIcon();
-        iconContainer.appendChild(editIcon);
-        // Evento para el ícono de edición
-        editIcon.addEventListener('click', () => {
-            toggleUserEdit(user, listItem, key);
-        });
-        // Añadir el ícono de editar al li
-        listItem.appendChild(iconContainer);
+
+        if (key != "id") {
+            // Crear el contenedor del ícono de editar
+            const iconContainer = document.createElement('span');
+            iconContainer.classList.add('edit-icon-container');
+            const editIcon = createEditIcon();
+            iconContainer.appendChild(editIcon);
+            // Evento para el ícono de edición
+            editIcon.addEventListener('click', () => {
+                toggleUserEdit(user, listItem, key);
+            });
+            // Añadir el ícono de editar al li
+            listItem.appendChild(iconContainer);
+        }
     }
     
     detailsContainer.appendChild(detailsList);

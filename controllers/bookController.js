@@ -43,5 +43,29 @@ exports.deleteBooks = (req, res) => {
             return res.status(500).send('Error deleting book');
             }
             res.status(200).send('Book deleted successfully');
-            });
+        });
 }
+exports.updateProp = (req, res) => {
+    const isbn = req.params.isbn;
+    const { prop, value } = req.body;
+
+    // Log de depuración
+    console.log(`Updating book with ISBN: ${isbn}`);
+    console.log(`Property to update: ${prop}`);
+    console.log(`New value: ${value}`);
+
+    const allowedProps = ['title', 'author', 'genre', 'publisher', 'publicationYear01', 'location', 'loanStatus', 'summary'];
+    if (!allowedProps.includes(prop)) {
+        console.log('Invalid property');
+        return res.status(400).send('Invalid property');
+    }
+
+    Book.update(isbn, prop, value, (err) => {
+        if (err) {
+            console.error('Error updating book:', err);
+            return res.status(500).send('Error updating book');
+        }
+        res.status(200).send('Book updated successfully');
+    });
+};
+

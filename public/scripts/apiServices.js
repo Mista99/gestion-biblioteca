@@ -1,5 +1,5 @@
 import { listUsers, listBooks } from './config.js';
-export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail };
+export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail, updateBookProp };
 
 // Función para cargar libros en la biblioteca
 function sendNewBook(newBook) {
@@ -86,6 +86,26 @@ async function updateUserName(id, name) {
         throw error;
     }
 }
+async function updateBookProp(isbn, prop, value) {
+    try {
+        const response = await fetch(`http://localhost:3000/api/books/${isbn}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prop, value })  // Enviar la propiedad y su nuevo valor en el cuerpo
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update book property');
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error updating book property:', error);
+        throw error;
+    }
+}
+
 async function updateUserEmail(id, email) {
     try {
         const response = await fetch('http://localhost:3000/api/users/email', {
