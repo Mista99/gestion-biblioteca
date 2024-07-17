@@ -37,3 +37,11 @@ exports.deleteAllBooks = (req, res) => {
         res.status(200).send('All books deleted successfully');
     });
 };
+exports.deleteBooks = (req, res) => {
+    Book.delete(req.params.isbn, (err) => {
+        if (err) {
+            return res.status(500).send('Error deleting book');
+            }
+            res.status(200).send('Book deleted successfully');
+            });
+}

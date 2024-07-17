@@ -45,6 +45,15 @@ class Book {
             callback(null);
         });
     }
+    static delete (isbn, callback) {
+        const sql = 'DELETE FROM Books WHERE isbn = ?';
+        db.run(sql, [isbn], function(err) {
+            if (err) {
+                return callback(err);
+                }
+                callback(null);
+                });
+    }
 
     // Otros métodos para actualizar, eliminar por isbn, etc.
 }

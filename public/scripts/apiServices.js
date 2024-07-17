@@ -1,5 +1,5 @@
 import { listUsers, listBooks } from './config.js';
-export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook };
+export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, updateUserName, updateUserEmail };
 
 // Función para cargar libros en la biblioteca
 function sendNewBook(newBook) {
@@ -72,6 +72,35 @@ async function getUsers() {
         throw error;
     }
 }
+async function updateUserName(id, name) {
+    try {
+        const response = await fetch('http://localhost:3000/api/users/name', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, name })
+        });
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error updating user name:', error);
+        throw error;
+    }
+}
+async function updateUserEmail(id, email) {
+    try {
+        const response = await fetch('http://localhost:3000/api/users/email', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, email })
+        });
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error updating user email:', error);
+        throw error;
+    }
+}
+
 async function deleteBook(isbn) {
     try {
         const response = await fetch(`http://localhost:3000/api/books/${isbn}`, {

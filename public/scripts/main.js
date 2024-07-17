@@ -4,7 +4,7 @@ import { Book } from './Book.js';
 import { BookCopy } from './BookCopy.js';
 import {createEditIcon, createTrashIcon} from './buttons.js';
 import {listUsers, listBooks} from './config.js'
-import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook} from './apiServices.js';
+import {sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, updateUserName, updateUserEmail} from './apiServices.js';
 
 const library = new Library(9981656156, "Lectulandia");
 
@@ -49,9 +49,9 @@ function loadUsers(users) {
                 };
             });
 
-            const user = new User(userData.id, userData.name, userData.email);
-            user.borrowedCopies = borrowedCopies;
-            library.addUser(user); // Agrega el usuario a la biblioteca
+            const uss = new User(userData.id, userData.name, userData.email);
+            uss.borrowedCopies = borrowedCopies;
+            return library.addUser(uss); // Agrega el usuario a la biblioteca
         } else {
             // Si borrowedCopies no está definido o no es un array
             console.warn(`El usuario con ID ${userData.id} no tiene copias prestadas o el formato es incorrecto.`);
@@ -83,7 +83,7 @@ function renderBooks(filtro = '') {
         //evendo eliminar
         trashIcon.addEventListener('click', (e) => {
             console.log(book.isbn)
-            e.stopPropagation(); // Evita que el evento se propague al li
+            // e.stopPropagation(); // Evita que el evento se propague al li
             deleteBook(book.isbn);
             renderBooks();
         });
@@ -156,8 +156,8 @@ function renderUsers(filtro = '') {
             li.appendChild(iconContainer);
             lista.appendChild(li);
         });
-    
 }
+
 function toggleUserDetails(user, clickedLi) {
     const detailsId = `details-${user.id}`;
     const existingDetails = document.getElementById(detailsId);
@@ -171,15 +171,63 @@ function toggleUserDetails(user, clickedLi) {
         detailsContainer.id = detailsId;
         clickedLi.insertAdjacentElement('afterend', detailsContainer);
     }
-}
+}function toggleUserEdit(user, li, key) {
+    // Si ya está en modo edición, lo desactivamos
+    if (li.classList.contains('editing')) {
+        li.classList.remove('editing');
+        li.innerHTML = `${user[key]}`;
 
+        // Restaurar el ícono de edición
+        const iconContainer = document.createElement('span');
+        iconContainer.classList.add('edit-icon-container');
+        const editIcon = createEditIcon();
+        iconContainer.appendChild(editIcon);
+        li.appendChild(iconContainer);
+        
+    } else {
+        // Cambiar a modo edición
+        li.classList.add('editing');
+        li.innerHTML = `
+            <input type="text" id="edit-${user[key]}" value="${user[key]}">
+        `;
+
+        // Añadir el botón de guardar
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Guardar';
+        saveButton.addEventListener('click', () => {
+            const updateLi = document.getElementById(`edit-${user[key]}`).value;
+
+            // Actualizar los datos del usuario
+            user[key] = updateLi;
+            if (key = "name"){
+                updateUserName(user.id, user.name);
+            }
+            if (key = "email") {
+                updateUserEmail(user.id, user.email);
+            }
+            
+            // Actualizar la visualización y volver al modo de vista
+            renderUsers();
+        });
+        li.appendChild(saveButton);
+
+        // Restaurar el ícono de edición
+        const iconContainer = document.createElement('span');
+        iconContainer.classList.add('edit-icon-container');
+        const editIcon = createEditIcon();
+        iconContainer.appendChild(editIcon);
+        li.appendChild(iconContainer);
+        
+    }
+}
 function createUserDetails(user) {
     const detailsContainer = document.createElement('div');
     detailsContainer.classList.add('user-details-container');
     const detailsList = document.createElement('ul');
 
-    // Iterar sobre las propiedades del libro y agregarlas como elementos de lista
-    for (const [key, value] of Object.entries(user)) {
+    // Iterar sobre las propiedades del user y agregarlas como elementos de lista
+    for (const [key, value] of Object.entries(user)) {//Object.entries convierte en arrays clave valor a los atributos y valores de user
+        console.log(`prueba de key: ${user[key]}`);
         const listItem = document.createElement('li');
         listItem.classList.add('details-item');
         listItem.textContent = `${key}: ${value}`;
@@ -189,10 +237,14 @@ function createUserDetails(user) {
         iconContainer.classList.add('edit-icon-container');
         const editIcon = createEditIcon();
         iconContainer.appendChild(editIcon);
+        // Evento para el ícono de edición
+        editIcon.addEventListener('click', () => {
+            toggleUserEdit(user, listItem, key);
+        });
         // Añadir el ícono de editar al li
         listItem.appendChild(iconContainer);
     }
-
+    
     detailsContainer.appendChild(detailsList);
     return detailsContainer;
 }
@@ -262,14 +314,13 @@ document.getElementById('input-search-book').addEventListener('input', (event) =
 // Cargar datos iniciales cuando el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
     getUsers()
-        .then((users) => loadUsers(users))
+        .then((users) => loadUsers(users)) //cargar usuarios como objetos, auqneu no funciona
         .then(() => renderUsers());
 
     getBooks()
         .then((books) => loadBooks(books))
         .then(() => renderBooks());
 
-    console.log("Datos cargados:", library.books, library.users);
-
+    console.log("Datos cargados:", library.users, library.books);
 
 });

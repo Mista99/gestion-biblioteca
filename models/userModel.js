@@ -8,8 +8,8 @@ class User {
     }
 
     static create(user, callback) {
-        const { name, email } = user;
-        const sql = 'INSERT INTO users (name, email) VALUES (?, ?)';
+        const { id, name, email } = user;
+        const sql = 'INSERT INTO users (id, name, email) VALUES (?, ?, ?)';
         db.run(sql, [name, email], function(err) {
             if (err) {
                 return callback(err);
@@ -27,7 +27,36 @@ class User {
             callback(null, rows);
         });
     }
+    // Método para actualizar el nombre del user
+    static updateName(id, name, callback) {
+        const sql = 'UPDATE users SET name = ? WHERE id = ?';
+        db.run(sql, [name, id], function(err) {
+            if (err) {
+                return callback(err);
+            }
+            callback(null, { changes: this.changes });
+        });
+    }
 
+    // Método para actualizar el correo del user
+    static updateEmail(id, email, callback) {
+        const sql = 'UPDATE users SET email = ? WHERE id = ?';
+        db.run(sql, [email, id], function(err) {
+            if (err) {
+                return callback(err);
+            }
+            callback(null, { changes: this.changes });
+        });
+    }
+    static delete(isbn, callback) {
+        const sql = 'DELETE FROM users WHERE isbn = ?';
+        db.run(sql, [isbn], function(err) {
+            if (err) {
+                return callback(err);
+            }  
+            callback(null);
+        });
+    }
     static deleteAll(callback) {
         const sql = 'DELETE FROM users';
         db.run(sql, [], function(err) {
