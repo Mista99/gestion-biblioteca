@@ -1,77 +1,18 @@
-const db = require('../config/database');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-class Book {
-    constructor(isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary) {
-        this.isbn = isbn;
-        this.title = title;
-        this.author = author;
-        this.genre = genre;
-        this.publisher = publisher;
-        this.publicationYear = publicationYear;
-        this.location = location;
-        this.loanStatus = loanStatus;
-        this.summary = summary;
-    }
+const bookSchema = new Schema({
+  isbn: { type: String, required: true, unique: true },
+  title: { type: String, required: true },
+  author: { type: String, required: true },
+  genre: { type: String, required: true },
+  publisher: { type: String, required: true },
+  publicationYear: { type: Number, required: true },
+  location: { type: String, required: true },
+  loanStatus: { type: String, required: true },
+  summary: { type: String, required: true },
+});
 
-    static create(book, callback) {
-        const { isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary } = book;
-        const sql = `INSERT INTO Books 
-                    (isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-        db.run(sql, [isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary], function(err) {
-            if (err) {
-                return callback(err);
-            }
-            callback(null);
-        });
-    }
-    static update(isbn, prop, value, callback) {
-        //el siguiente comando, ak tener una variable en el SQL puede provocar una inyeccion SQL
-        const sql = `UPDATE Books SET ${prop} = ? WHERE isbn = ?`;
-    
-        // Log de depuración
-        console.log(`Executing SQL: ${sql}`);
-        console.log(`With values: [${value}, ${isbn}]`);
-    
-        db.run(sql, [value, isbn], function(err) {
-            if (err) {
-                console.error('Database error:', err);
-                return callback(err);
-            }
-            callback(null);
-        });
-    }
-        
-    static findAll(callback) {
-        const sql = 'SELECT * FROM Books';
-        db.all(sql, [], (err, rows) => {
-            if (err) {
-                return callback(err);
-            }
-            callback(null, rows);
-        });
-    }
-
-    static deleteAll(callback) {
-        const sql = 'DELETE FROM Books';
-        db.run(sql, [], function(err) {
-            if (err) {
-                return callback(err);
-            }
-            callback(null);
-        });
-    }
-    static delete (isbn, callback) {
-        const sql = 'DELETE FROM Books WHERE isbn = ?';
-        db.run(sql, [isbn], function(err) {
-            if (err) {
-                return callback(err);
-                }
-                callback(null);
-            });
-    }
-
-    // Otros métodos para actualizar, eliminar por isbn, etc.
-}
+const Book = mongoose.model('Book', bookSchema);
 
 module.exports = Book;

@@ -74,11 +74,16 @@ async function getUsers() {
 }
 async function updateUserName(id, name) {
     try {
-        const response = await fetch('http://localhost:3000/api/users/name', {
+        const response = await fetch(`http://localhost:3000/api/users/${id}/name`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, name })
+            body: JSON.stringify({ name })
         });
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
         const result = await response.json();
         return result;
     } catch (error) {
@@ -86,6 +91,7 @@ async function updateUserName(id, name) {
         throw error;
     }
 }
+
 async function updateBookProp(isbn, prop, value) {
     try {
         const response = await fetch(`http://localhost:3000/api/books/${isbn}`, {
@@ -108,11 +114,16 @@ async function updateBookProp(isbn, prop, value) {
 
 async function updateUserEmail(id, email) {
     try {
-        const response = await fetch('http://localhost:3000/api/users/email', {
+        const response = await fetch(`http://localhost:3000/api/users/${id}/email`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id, email })
+            body: JSON.stringify({ email })
         });
+
+        if (!response.ok) {
+            throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
         const result = await response.json();
         return result;
     } catch (error) {
@@ -120,6 +131,7 @@ async function updateUserEmail(id, email) {
         throw error;
     }
 }
+
 
 async function deleteBook(isbn) {
     try {
@@ -146,17 +158,15 @@ async function deleteBook(isbn) {
 async function deleteUser(id) {
     try {
         const response = await fetch(`http://localhost:3000/api/users/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            method: 'DELETE'
         });
 
         if (!response.ok) {
-            throw new Error('Error al eliminar el usuario del servidor');
+            const errorMessage = await response.text(); // Leer el mensaje de error del servidor
+            throw new Error(`Error al eliminar el usuario del servidor: ${errorMessage}`);
         }
 
-        // Eliminar el libro de listBooks
+        // Eliminar el usuario de listUsers
         const userIndex = listUsers.findIndex(user => user.id === id);
         if (userIndex !== -1) {
             listUsers.splice(userIndex, 1);
@@ -165,4 +175,5 @@ async function deleteUser(id) {
         console.error('Error al eliminar el usuario:', error);
     }
 }
+
 

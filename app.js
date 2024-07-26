@@ -1,12 +1,19 @@
+require('dotenv').config(); 
 const express = require('express');
 const cors = require('cors');
+const connectDB = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
 const bookRoutes = require('./routes/bookRoutes');
 
+
 const app = express();
 const port = process.env.PORT ?? 3000;
+app.use(express.json()); // Middleware para parsear JSON
 
-app.use(express.json());
+
+// Conectar a la base de datos
+connectDB();
+
 app.use(cors({
     origin: 'http://127.0.0.1:5500'
 }));

@@ -1,30 +1,19 @@
-const sqlite3 = require('sqlite3').verbose(); //verbose)= -> version extendida de Sqlite con mensajes en la consola para mejroar la depuracion
-const path = require('path'); //para manejar rutas de archivos de manera mas eficiente
+require('dotenv').config();
+const mongoose = require('mongoose');
 
-const dbPath = path.resolve(__dirname, '../database.sqlite');
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Error opening database:', err.message);
-    } else {
-        console.log('Connected to the SQLite database.');
-        db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL
-        )`);
+const user = 'admin-library';
+const password = 'MnCzi0ncX47go2LI';
+const BD = "Biblioteca";
+const uri = `mongodb+srv://admin-library:${password}@library0.t6p18uw.mongodb.net/${BD}?retryWrites=true&w=majority&appName=library0`;
 
-        db.run(`CREATE TABLE IF NOT EXISTS Books (
-            isbn TEXT PRIMARY KEY,
-            title TEXT,
-            author TEXT,
-            genre TEXT,
-            publisher TEXT,
-            publicationYear INTEGER,
-            location TEXT,
-            loanStatus TEXT,
-            summary TEXT
-          )`);
-    }
-});
+const connectDB = async () => {
+  try {
+    await mongoose.connect(uri);
+    console.log('Connected to MongoDB');
+  } catch (err) {
+    console.error('Error connecting to MongoDB:', err.message);
+    process.exit(1); // Termina la aplicación si no puede conectarse
+  }
+};
 
-module.exports = db;
+module.exports = connectDB;
