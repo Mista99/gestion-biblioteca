@@ -55,14 +55,19 @@ exports.updateProp = async (req, res) => {
   const allowedProps = ['title', 'author', 'genre', 'publisher', 'publicationYear', 'location', 'loanStatus', 'summary'];
   if (!allowedProps.includes(prop)) {
     console.log('Invalid property');
-    return res.status(400).send('Invalid property');
+    return res.status(400).json({ error: 'Invalid property' });
   }
 
   try {
-    await BookService.update(isbn, prop, value);
-    res.status(200).send('Book updated successfully');
+    const updatedBook = await BookService.update(isbn, prop, value);
+    if (!updatedBook) {
+      console.log(`Book with ISBN ${isbn} not found`);
+      return res.status(404).json({ error: `Book with ISBN ${isbn} not found` });
+    }
+    console.log('Book updated successfully:', updatedBook);
+    res.status(200).json(updatedBook);
   } catch (err) {
     console.error('Error updating book:', err);
-    res.status(500).send('Error updating book');
+    res.status(500).json({ error: 'Error updating book' });
   }
 };

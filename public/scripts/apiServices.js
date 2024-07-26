@@ -97,14 +97,16 @@ async function updateBookProp(isbn, prop, value) {
         const response = await fetch(`http://localhost:3000/api/books/${isbn}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prop, value })  // Enviar la propiedad y su nuevo valor en el cuerpo
+            body: JSON.stringify({ prop, value })
         });
 
         if (!response.ok) {
             throw new Error('Failed to update book property');
         }
 
+        // Verifica si la respuesta tiene un contenido JSON
         const result = await response.json();
+        console.log('Update response:', result);
         return result;
     } catch (error) {
         console.error('Error updating book property:', error);

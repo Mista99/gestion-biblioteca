@@ -85,6 +85,7 @@ function renderBooks(filtro = '') {
             console.log(book.isbn)
             // e.stopPropagation(); // Evita que el evento se propague al li
             deleteBook(book.isbn);
+            getBooks();
             renderBooks();
         });
     });
@@ -163,6 +164,7 @@ function renderUsers(filtro = '') {
             trashIcon.addEventListener('click', (e) => {
                 // e.stopPropagation(); // Evita que el evento se propague al li
                 deleteUser(user.id);
+                getUsers();
                 renderUsers();
             });
         });
@@ -261,7 +263,7 @@ function toggleBookEdit(book, li, key) {
             book[key] = updateLi;
             updateBookProp(book.isbn, key, book[key]);
             // Actualizar la visualización y volver al modo de vista
-            renderUsers();
+            renderBooks();
         });
         li.appendChild(saveButton);
 

@@ -9,9 +9,21 @@ class BookService {
   static async update(isbn, prop, value) {
     const update = {};
     update[prop] = value;
-    await Book.updateOne({ isbn: isbn }, { $set: update });
-  }
 
+    // Actualiza el libro con la propiedad dada
+    await Book.updateOne({ isbn: isbn }, { $set: update });
+
+    // Busca el libro actualizado y lo devuelve
+    const updatedBook = await Book.findOne({ isbn }).lean();
+    
+    // Verifica si el libro fue encontrado y actualizado
+    if (!updatedBook) {
+      throw new Error(`Book with ISBN ${isbn} not found`);
+    }
+
+    return updatedBook;
+  }
+  
   static async findAll() {
     return await Book.find();
   }
