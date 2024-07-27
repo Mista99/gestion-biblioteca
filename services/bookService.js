@@ -25,9 +25,9 @@ class BookService {
   }
   
   static async findAll() {
-    return await Book.find();
+    return await Book.find().select('-_id -__v');
   }
-
+  
   static async deleteAll() {
     await Book.deleteMany();
   }

@@ -4,11 +4,11 @@ exports.createBook = async (req, res) => {
   const { isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary } = req.body;
   
   try {
-    await BookService.create({ isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary });
-    res.status(201).send('Book created successfully');
+    const newBook = await BookService.create({ isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary });
+    res.status(201).json({ message: 'Book created successfully', book: newBook });
   } catch (err) {
     console.error('Error creating book:', err);
-    res.status(500).send('Error creating book');
+    res.status(500).json({ message: 'Error creating book', error: err.message });
   }
 };
 

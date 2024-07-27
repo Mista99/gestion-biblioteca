@@ -11,10 +11,11 @@ function sendNewBook(newBook) {
         body: JSON.stringify(newBook)
     })
     .then(response => {
+        console.log('Estado de la respuesta:', response.status);
         if (!response.ok) {
-            throw new Error('Error en la solicitud POST para Books');
+            return response.text().then(text => { throw new Error(text) });
         }
-        return response.text();
+        return response.json();  // Asegurarse de que estás manejando JSON
     })
     .then(data => {
         console.log('Respuesta del servidor:', data);
@@ -23,6 +24,7 @@ function sendNewBook(newBook) {
         console.error('Error:', error);
     });
 }
+
 
 function sendNewUser(newUser) {
     fetch('http://localhost:3000/api/users', {

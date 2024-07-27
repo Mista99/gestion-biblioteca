@@ -348,8 +348,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 library.addBook(newBook);
                 listBooks.push(newBook);
                 console.log("Datos de prueba:", library.books);
-                renderBooks();
                 sendNewBook(newBook);
+                renderBooks();
             } else {
                 console.error('Por favor, completa todos los campos obligatorios.');
             }
