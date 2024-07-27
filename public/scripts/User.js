@@ -1,9 +1,11 @@
 export class User {
-    constructor(id, name, email, borrowedCopies = []) {
+    constructor(id, name, email, role = "user", borrowedCopies = []) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.role = role;
         this.borrowedCopies = borrowedCopies;
+
     }
 
     borrowBook(copy) {

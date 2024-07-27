@@ -314,17 +314,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = document.getElementById('input-id').value;
         const name = document.getElementById('input-name').value;
         const email = document.getElementById('input-email').value;
+        const role = document.getElementById('input-role').value;
 
         if (id && name && email) {
-            const newUser = new User(id, name, email);
-            const user = {id: id, name: name, email: email};
-            library.addUser(newUser);
+            const newUser = new User(id, name, email, role);
+            const user = {id: id, name: name, email: email, role: role};
+            library.addUser(user);
             listUsers.push(user);
 
-            
             console.log("Datos prueba:", library.users);
             sendNewUser(newUser);
-            
         }
         
     });
