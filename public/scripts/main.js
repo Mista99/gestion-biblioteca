@@ -81,10 +81,10 @@ function renderBooks(filtro = '') {
 
         lista.appendChild(li);
         //evendo eliminar
-        trashIcon.addEventListener('click', (e) => {
+        trashIcon.addEventListener('click', async (e) => {
             console.log(book.isbn)
             // e.stopPropagation(); // Evita que el evento se propague al li
-            deleteBook(book.isbn);
+            await deleteBook(book.isbn);
             getBooks();
             renderBooks();
         });
@@ -161,9 +161,9 @@ function renderUsers(filtro = '') {
             li.appendChild(iconContainer);
             lista.appendChild(li);
             //evento eliminar
-            trashIcon.addEventListener('click', (e) => {
+            trashIcon.addEventListener('click', async (e) => {
                 // e.stopPropagation(); // Evita que el evento se propague al li
-                deleteUser(user.id);
+                await deleteUser(user.id);
                 getUsers();
                 renderUsers();
             });
