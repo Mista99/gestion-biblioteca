@@ -13,9 +13,15 @@ const port = process.env.PORT ?? 3000;
 app.use(express.json()); // Middleware para parsear JSON
 app.use(cookieParser());
 
+const MONGO_USER = process.env.MONGO_USER;
+const MONGO_PASSWORD = process.env.MONGO_PASSWORD;
+const MONGO_DBNAME = process.env.MONGO_DBNAME;
+const MONGO_URI = `mongodb+srv://${MONGO_USER}:${MONGO_PASSWORD}@library0.t6p18uw.mongodb.net/${MONGO_DBNAME}?retryWrites=true&w=majority&appName=library0`;
+
+console.log("Mongo URI:", MONGO_URI); // Para verificar que se está cargando correctamente
 
 // Conectar a la base de datos
-connectDB();
+connectDB(MONGO_URI);
 
 app.use(cors({
     origin: 'http://127.0.0.1:5500'
