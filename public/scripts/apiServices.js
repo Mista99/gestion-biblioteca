@@ -1,5 +1,5 @@
 import { listUsers, listBooks } from './config.js';
-export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail, updateBookProp };
+export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail, updateBookProp, registerUser, loginUser};
 
 // Función para cargar libros en la biblioteca
 function sendNewBook(newBook) {
@@ -47,7 +47,55 @@ function sendNewUser(newUser) {
         console.error('Error:', error);
     });
 }
+async function registerUser(userData) {
+    const url = 'http://localhost:3000/api/register'; // Cambia esto por la URL de tu API
 
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('User registered successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('Error registering user:', error.message);
+        throw new Error(`Error registering user: ${error.message}`);
+    }
+}
+
+async function loginUser(userData) {
+    const url = 'http://localhost:3000/login'; // Cambia esto por la URL de tu API
+
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(userData)
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('User logged in successfully:', data);
+        return data;
+    } catch (error) {
+        console.error('Error logging in user:', error.message);
+        throw new Error(`Error logging in user: ${error.message}`);
+    }
+}
 async function getBooks() {
     try {
         const responseBooks = await fetch('http://localhost:3000/api/books');

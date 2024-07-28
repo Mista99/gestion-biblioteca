@@ -5,6 +5,11 @@ const userController = require('../controllers/userController');
 // Crear un nuevo usuario
 router.post('/users', userController.createUser);
 
+// Registro de usuario (puede incluir opción para registrar administradores)
+router.post('/register', userController.registerUser);
+
+router.post('/login', userController.loginUser);
+
 // Obtener todos los usuarios
 router.get('/users', userController.getAllUsers);
 

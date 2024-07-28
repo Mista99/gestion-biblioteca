@@ -91,11 +91,14 @@ nav {
         justify-content: center;
     }
     .content {
+        display: flex;
+        flex-direction: column;
         background-color: #fff;
         padding: 2rem;
         margin: 0.5rem;
         border-radius: var(--border-radius);
-        height: auto;
+        min-height: 50rem;
+        max-width: 50rem;
     }
 }
 
@@ -171,7 +174,7 @@ footer p {
     margin-bottom: 0.5rem;
 }
 
-input {
+input, .input-select {
     width: 100%;
     padding: 0.8rem;
     font-size: 1.6rem; /* 16px */
@@ -299,4 +302,8 @@ input {
     align-items: center;
     justify-content: space-between;
     
+}
+.center{
+    align-items: center;
+    justify-content: center;
 }

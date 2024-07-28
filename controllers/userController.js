@@ -1,4 +1,10 @@
+require('dotenv').config();
+const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
+
+
+const TOKEN_KEY = process.env.TOKEN_KEY;
+console.log("clave s", TOKEN_KEY);
 
 // Crear un nuevo usuario
 exports.createUser = async (req, res) => {
@@ -16,7 +22,42 @@ exports.createUser = async (req, res) => {
     }
 };
 
+exports.registerUser = async (req, res) => {
+    try {
+        const { id, name, email, password, role } = req.body;
+        const user = await userService.registerUser({ id, name, email, password, role });
+        res.status(201).send({ message: 'User registered successfully', user });
+    } catch (error) {
+        console.error('Error registering user:', error.message);
+        res.status(400).send({ error: `Error registering user: ${error.message}` });
+    }
+};
 
+exports.loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await userService.loginUser(email, password);
+
+        if (user) {
+            // Genera un token JWT
+            const token = jwt.sign(
+                { id: user._id, role: user.role },
+                TOKEN_KEY, // Reemplaza esto con tu clave secreta
+                { expiresIn: '1h' } // Tiempo de expiración del token
+            );
+
+            // Configura la cookie con el token
+            res.cookie('token', token, { httpOnly: true });
+
+            res.status(200).json({ message: 'User authenticated successfully', userId: user._id });
+        } else {
+            res.status(400).json({ error: 'Invalid email or password' });
+        }
+    } catch (error) {
+        console.error('Error logging in user:', error.message);
+        res.status(500).json({ error: 'Error logging in user' });
+    }
+};
 // Obtener todos los usuarios
 exports.getAllUsers = async (req, res) => {
     try {

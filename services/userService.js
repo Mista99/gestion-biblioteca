@@ -1,7 +1,11 @@
 const User = require('../models/userModel');
+const bcrypt = require('bcrypt');
+require('dotenv').config();
+
 
 // Crear un nuevo usuario
 exports.createUser = async (uss) => {
+
     try {
         console.log('Intentando crear un nuevo usuario EN userservice con:', uss);
         const newUser = new User(uss); // Añadir un password por defecto si es necesario
@@ -11,6 +15,40 @@ exports.createUser = async (uss) => {
     } catch (error) {
         console.error('Error al crear el usuario en el servicio:', error.message);
         throw new Error(error.message);
+    }
+};
+
+
+// Función para registrar un nuevo usuario
+exports.registerUser = async (userData) => {
+    try {
+        const {email} = userData;
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            throw new Error('User already exists');
+        }
+        await userData.save();
+        return userData;
+    } catch (error) {
+        console.error('Error registering user in service:', error.message);
+        throw new Error('Error registering user in service');
+    }
+};
+exports.loginUser = async (email, password) => {
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw new Error('Invalid email or password');
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            throw new Error('Invalid email or password');
+        }
+
+        return user;
+    } catch (error) {
+        console.error('Error logging in user in service:', error.message);
+        throw new Error('Error logging in user in service');
     }
 };
 

@@ -1,14 +1,17 @@
 require('dotenv').config(); 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser'); // Asegúrate de requerir cookie-parser
 const connectDB = require('./config/database');
 const userRoutes = require('./routes/userRoutes');
 const bookRoutes = require('./routes/bookRoutes');
+const protectedRoutes = require('./routes/protectedRoutes');
 
 
 const app = express();
 const port = process.env.PORT ?? 3000;
 app.use(express.json()); // Middleware para parsear JSON
+app.use(cookieParser());
 
 
 // Conectar a la base de datos
@@ -20,6 +23,8 @@ app.use(cors({
 
 app.use('/api', userRoutes); //la palabra api queda para todas las rutas que se usen ahora
 app.use('/api', bookRoutes);
+// Rutas protegidas
+app.use(protectedRoutes);
 
 app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);
