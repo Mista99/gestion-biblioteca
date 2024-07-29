@@ -36,14 +36,16 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log('Attempting to login user with email:', email);
+
         const user = await userService.loginUser(email, password);
 
         if (user) {
             // Genera un token JWT
             const token = jwt.sign(
                 { id: user._id, role: user.role },
-                TOKEN_KEY, // Reemplaza esto con tu clave secreta
-                { expiresIn: '1h' } // Tiempo de expiración del token
+                TOKEN_KEY,
+                { expiresIn: '1h' }
             );
 
             // Configura la cookie con el token

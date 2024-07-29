@@ -22,13 +22,14 @@ exports.createUser = async (uss) => {
 // Función para registrar un nuevo usuario
 exports.registerUser = async (userData) => {
     try {
-        const {email} = userData;
+        const { email } = userData;
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             throw new Error('User already exists');
         }
-        await userData.save();
-        return userData;
+        const newUser = new User(userData);
+        await newUser.save();
+        return newUser;
     } catch (error) {
         console.error('Error registering user in service:', error.message);
         throw new Error('Error registering user in service');

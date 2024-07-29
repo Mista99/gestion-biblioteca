@@ -73,7 +73,7 @@ async function registerUser(userData) {
 }
 
 async function loginUser(userData) {
-    const url = 'http://localhost:3000/login'; // Cambia esto por la URL de tu API
+    const url = 'http://localhost:3000/api/login'; // Cambia esto por la URL de tu API
 
     try {
         const response = await fetch(url, {
@@ -85,7 +85,7 @@ async function loginUser(userData) {
         });
 
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            throw new Error(`Error: captura de erro en el front ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
