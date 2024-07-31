@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             try {
                 const result = await loginUser(userData);
-                alert('Inicio de sesión exitoso');
-                window.location.href = 'user-panel.html'; // Redirige a la página de user-panel
+                alert('Inicio de sesión exitoso'); // Redirige a la página de user-panel
             } catch (error) {
                 alert('Error al iniciar sesión');
             }
@@ -22,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.error('Elemento loginForm no encontrado en el DOM');
     }
+
     const register = document.getElementById('registerForm');
     register.addEventListener('submit', async function(event) {
         event.preventDefault();

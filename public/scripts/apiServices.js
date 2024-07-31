@@ -81,6 +81,7 @@ async function loginUser(userData) {
             headers: {
                 'Content-Type': 'application/json'
             },
+            credentials: 'include', // Incluir cookies en la solicitud
             body: JSON.stringify(userData)
         });
 
@@ -90,6 +91,8 @@ async function loginUser(userData) {
 
         const data = await response.json();
         console.log('User logged in successfully:', data);
+        // Redirigir a la página de usuario después del inicio de sesión exitoso
+        window.location.href = 'http://localhost:3000/user-panel'; 
         return data;
     } catch (error) {
         console.error('Error logging in user:', error.message);

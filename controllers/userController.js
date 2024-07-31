@@ -1,4 +1,3 @@
-require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
 
@@ -36,21 +35,26 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log('Attempting to login user with email:', email);
+        console.log('Attempting to login user with email:', email, password);
 
         const user = await userService.loginUser(email, password);
 
         if (user) {
             // Genera un token JWT
+            console.log("verificando el TOKEN_Key en el controlador: ", TOKEN_KEY)
             const token = jwt.sign(
                 { id: user._id, role: user.role },
                 TOKEN_KEY,
                 { expiresIn: '1h' }
             );
-
+            console.log("token generado en el controlador: ", token)
             // Configura la cookie con el token
-            res.cookie('token', token, { httpOnly: true });
-
+            res.cookie('token', token, {
+                httpOnly: true,    // La cookie no es accesible desde JavaScript en el lado del cliente
+                secure: true,      // La cookie solo se envía a través de HTTPS
+                sameSite: 'None',  // La cookie se envía en solicitudes entre sitios
+                maxAge: 24 * 60 * 60 * 1000 // Duración de la cookie: 24 horas
+            });
             res.status(200).json({ message: 'User authenticated successfully', userId: user._id });
         } else {
             res.status(400).json({ error: 'Invalid email or password' });

@@ -1,7 +1,5 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
-
 
 // Crear un nuevo usuario
 exports.createUser = async (uss) => {
@@ -86,4 +84,31 @@ exports.deleteUser = async (id) => {
 // Eliminar todos los usuarios
 exports.deleteAllUsers = async () => {
     await User.deleteMany();
+};
+
+// Obtener un usuario por ID
+exports.getUserBy_Id = async (_id) => {
+    try {
+        const user = await User.findOne({ _id }, { password: 0, __v: 0 });
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return user;
+    } catch (error) {
+        console.error('Error getting user by ID in service:', error.message);
+        throw new Error('Error getting user by ID in service');
+    }
+};
+// Obtener los libros prestados por un usuario por ID
+exports.getBorrowedBooks = async (_id) => {
+    try {
+        const user = await User.findOne({ _id }, { borrowedBooks: 1});
+        if (!user) {
+            throw new Error('User not found');
+        }
+        return user.borrowedBooks;
+    } catch (error) {
+        console.error('Error getting borrowed books in service:', error.message);
+        throw new Error('Error getting borrowed books in service');
+    }
 };
