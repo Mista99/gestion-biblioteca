@@ -1,4 +1,6 @@
 const User = require('../models/userModel');
+const Book = require('../models/bookModel');
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 // Crear un nuevo usuario
@@ -87,9 +89,9 @@ exports.deleteAllUsers = async () => {
 };
 
 // Obtener un usuario por ID
-exports.getUserBy_Id = async (_id) => {
+exports.getUserBy_Id = async (id) => {
     try {
-        const user = await User.findOne({ _id }, { password: 0, __v: 0 });
+        const user = await User.findOne({ id }, { password: 0, __v: 0 });
         if (!user) {
             throw new Error('User not found');
         }
@@ -100,9 +102,9 @@ exports.getUserBy_Id = async (_id) => {
     }
 };
 // Obtener los libros prestados por un usuario por ID
-exports.getBorrowedBooks = async (_id) => {
+exports.getBorrowedBooks = async (id) => {
     try {
-        const user = await User.findOne({ _id }, { borrowedBooks: 1});
+        const user = await User.findOne({ id }, { borrowedBooks: 1});
         if (!user) {
             throw new Error('User not found');
         }
@@ -110,5 +112,44 @@ exports.getBorrowedBooks = async (_id) => {
     } catch (error) {
         console.error('Error getting borrowed books in service:', error.message);
         throw new Error('Error getting borrowed books in service');
+    }
+};
+
+exports.borrowBook = async (userId, bookIsbn) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        // Verificar si el libro tiene copias disponibles
+        const book = await Book.findOne({ isbn: bookIsbn }).session(session);
+        if (!book || book.availableCopies <= 0) {
+            throw new Error('No hay copias disponibles del libro.');
+        }
+
+        // Actualizar la cantidad de copias disponibles
+        console.log("prestando, copias disponibles: ", book)
+        book.availableCopies -= 1;
+        console.log("prestando, copias luego del prestamo: ", book)
+        await book.save({ session });
+
+        // Agregar el libro a la lista de libros prestados del usuario
+        const user = await User.findOne({ id: userId }).session(session);
+        if (!user) {
+            throw new Error('Usuario no encontrado.');
+        }
+        user.borrowedBooks.push({ bookId: book._id.toString(), title: book.title });
+        await user.save({ session });
+
+        // Cometer la transacción
+        await session.commitTransaction();
+        console.log('Libro prestado exitosamente');
+        return book;
+    } catch (error) {
+        // Abortar la transacción en caso de error
+        await session.abortTransaction();
+        console.error('Error al prestar el libro:', error);
+        throw error;
+    } finally {
+        session.endSession();
     }
 };

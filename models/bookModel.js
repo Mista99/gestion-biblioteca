@@ -11,6 +11,7 @@ const bookSchema = new Schema({
   location: { type: String, required: true },
   loanStatus: { type: String, required: true },
   summary: { type: String, required: true },
+  availableCopies: {type: Number, required: true, default: 1 }
 });
 
 const Book = mongoose.model('Book', bookSchema);

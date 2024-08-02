@@ -143,3 +143,25 @@ exports.deleteAllUsers = async (req, res) => {
         res.status(500).json({ error: 'Error deleting all users' });
     }
 };
+
+exports.borrowBook = async (req, res) => {
+    const { id, isbn } = req.body;
+    console.log("recibiendo datos: ", id, isbn)
+    try {
+        const book = await userService.borrowBook(id, isbn);
+        res.status(200).json({ message: 'Libro prestado exitosamente', book });
+    } catch (error) {
+        res.status(500).json({ error: `Error al prestar el libro: ${error.message}` });
+    }
+};
+exports.getBorrowedBooks = async (req, res) => {
+    const { id } = req.body;
+    console.log("recibiendo datos: ", id)
+    try {
+        const books = await userService.getBorrowedBooks(id);
+        res.status(200).json({ books });
+        } 
+    catch (error) {
+        res.status(500).json({ error: `Error al obtener libros prestados: ${error.message}`});
+    }
+}

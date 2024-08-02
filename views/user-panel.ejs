@@ -1,13 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>User Panel</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Usuario</title>
+    <link rel="stylesheet" href="styles-user-panel.css">
 </head>
 <body>
     <h1>Welcome, <%= user.name %></h1>
     <h2>Borrowed Books</h2>
     <ul>
-
     </ul>
+    <div class="container">
+        <header>
+            <h1>Panel de Usuario</h1>
+            <nav>
+                <a href="#borrow-return">Pedir/Devolver Libros</a>
+                <a href="#borrowed-books">Libros Prestados</a>
+            </nav>
+        </header>
+        
+        <section id="borrow-return" class="section">
+            <h2>Pedir o Devolver Libros</h2>
+            <form id="borrow-form">
+                <h3>Pedido de Libro</h3>
+                <label for="borrow-book-id">ID del Libro:</label>
+                <input type="text" id="borrow-book-id" name="borrow-book-id" required>
+                <button type="submit">Pedir Prestado</button>
+            </form>
+
+            <form id="return-form">
+                <h3>Devolución de Libro</h3>
+                <label for="return-book-id">ID del Libro:</label>
+                <input type="text" id="return-book-id" name="return-book-id" required>
+                <button type="submit">Devolver</button>
+            </form>
+        </section>
+
+        <section id="borrowed-books" class="section">
+            <h2>Libros Prestados</h2>
+            <% if (user.borrowedBooks && user.borrowedBooks.length > 0) { %>
+                <ul class="book-list">
+                    <% user.borrowedBooks.forEach(book => { %>
+                        <li>
+                            <h3><%= book.title %></h3>
+                            <p>Author: <%= book.author %></p>
+                            <p>Borrowed Date: <%= new Date(book.borrowedDate).toLocaleDateString() %></p>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p>Aun no tienes libros prestados.</p>
+            <% } %>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

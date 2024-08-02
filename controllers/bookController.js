@@ -1,10 +1,10 @@
 const BookService = require('../services/bookService');
 
 exports.createBook = async (req, res) => {
-  const { isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary } = req.body;
+  const { isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary, availableCopies } = req.body;
   
   try {
-    const newBook = await BookService.create({ isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary });
+    const newBook = await BookService.create({ isbn, title, author, genre, publisher, publicationYear, location, loanStatus, summary, availableCopies });
     res.status(201).json({ message: 'Book created successfully', book: newBook });
   } catch (err) {
     console.error('Error creating book:', err);

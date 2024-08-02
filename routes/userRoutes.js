@@ -25,4 +25,6 @@ router.delete('/users/:id', userController.deleteUser);
 // Eliminar todos los usuarios
 router.delete('/users', userController.deleteAllUsers);
 
+router.post('/borrowBook', userController.borrowBook);
+
 module.exports = router;
