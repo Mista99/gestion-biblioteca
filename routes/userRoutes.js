@@ -9,6 +9,7 @@ router.post('/users', userController.createUser);
 router.post('/register', userController.registerUser);
 
 router.post('/login', userController.loginUser);
+router.post('/logout', userController.logOut);
 
 // Obtener todos los usuarios
 router.get('/users', userController.getAllUsers);
@@ -26,5 +27,7 @@ router.delete('/users/:id', userController.deleteUser);
 router.delete('/users', userController.deleteAllUsers);
 
 router.post('/borrowBook', userController.borrowBook);
+
+router.get('/borrowBook', userController.getBorrowedBooks);
 
 module.exports = router;

@@ -1,5 +1,24 @@
 /* styles.css */
+/* Variables globales */
+:root {
+    --base-font-size: 62.5%;  /* 1rem = 10px */
+    --font-size-base: 1.6rem;  /* 16px */
+    --font-family: Arial, sans-serif;
+    --bg-color-header: #212529;
+    --text-color-header: #fff;
+    --bg-color-nav: #444;
+    --text-color-nav: #fff;
+    --padding-nav: 1rem;
+    --border-radius: 0.5rem;
+    --bg-color-odd-li: #e0e0e0; /* Color de fondo para los elementos impares */
+}
 
+/* Estilos generales */
+*, *:before, *:after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
@@ -26,11 +45,20 @@ header h1 {
     margin: 0;
 }
 
-nav {
+.us-panel {
     margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
 }
 
-nav a {
+nav {
+    background-color: var(--bg-color-nav);
+    /* margin-top: 2.5rem; */
+    padding: var(--padding-nav);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.us-panel a {
     color: #fff;
     text-decoration: none;
     padding: 10px 15px;
@@ -39,7 +67,7 @@ nav a {
     border-radius: 5px;
 }
 
-nav a:hover {
+.us-panel a:hover {
     background: #666;
 }
 
@@ -85,12 +113,51 @@ button:hover {
     background: #555;
 }
 
-#borrowed-books-list {
+.book-list {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
-#borrowed-books-list li {
+.book-list li {
     padding: 10px;
     border-bottom: 1px solid #ddd;
+}
+
+.book-list h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2em;
+}
+
+.book-list p {
+    margin: 5px 0;
+}
+
+
+
+
+footer {
+    text-align: center;
+    padding: 1rem 0;
+    background-color: var(--bg-color-header);
+    color: var(--text-color-header);
+}
+
+footer p {
+    margin: 0;
+}
+/* Estilo por defecto para los iconos SVG */
+.nav-link svg {
+    stroke: #A7A295; /* Color predeterminado */
+    transition: stroke 0.3s; /* Transición suave para el cambio de color */
+}
+
+/* Estilo para los iconos SVG al hacer hover */
+.nav-link:hover svg {
+    stroke: #ffffff; /* Color blanco al hacer hover */
+}
+
+/* Opcional: Estilo para los iconos SVG al hacer hover en el enlace */
+.nav-link:hover {
+    color: #ffffff; /* Cambia el color del texto y el icono */
 }

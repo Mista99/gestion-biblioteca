@@ -64,6 +64,16 @@ exports.loginUser = async (req, res) => {
         res.status(500).json({ error: 'Error logging in user' });
     }
 };
+exports.logOut = async (req, res) => {
+    try {
+        res.clearCookie('token');
+        res.status(200).json({ message: 'User logged out successfully' });
+    }
+    catch (error) {
+        console.error('Error logging out user:', error.message);
+        res.status(500).json({ error: 'Error logging out user' });
+    }
+}
 // Obtener todos los usuarios
 exports.getAllUsers = async (req, res) => {
     try {
@@ -162,6 +172,6 @@ exports.getBorrowedBooks = async (req, res) => {
         res.status(200).json({ books });
         } 
     catch (error) {
-        res.status(500).json({ error: `Error al obtener libros prestados: ${error.message}`});
+        res.status(500).json({ error: `${error.message}`});
     }
 }

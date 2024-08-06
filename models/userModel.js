@@ -6,7 +6,13 @@ const borrowedBookSchema = new Schema({
     bookId: { type: String, required: true },
     title: { type: String, required: true },
     borrowedDate: { type: Date, default: Date.now },
-    returnDate: { type: Date }
+    returnDate: { 
+        type: Date, 
+        default: function() {
+            return new Date(this.borrowedDate.getTime() + 15 * 24 * 60 * 60 * 1000);
+        }
+    },
+    extensionCount: { type: Number, default: 0 } // Nuevo campo para contar las extensiones
 }, { _id: false });
 
 const userSchema = new Schema({
@@ -26,5 +32,6 @@ userSchema.pre('save', async function(next) {
 });
 
 const User = mongoose.model('User', userSchema);
+
 
 module.exports = User;

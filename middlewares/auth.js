@@ -10,16 +10,17 @@ const authenticateToken = (req, res, next) => {
     console.log("el token es (auth.js)", token)
 
     if (!token) {
-        return res.redirect('/login.html');
+
+        return res.redirect('/login.html'); 
     }
 
     try {
         const decoded = jwt.verify(token, TOKEN_KEY); // Reemplaza esto con tu clave secreta
         req.user = decoded; // Asigna el contenido decodificado del token a req.user
-        console.log("verificando el req.user.id (auth): ", req.user.id)
+        console.log("verificando el req.user.id (auth): ", req.user.id)//cel token fue codificado con el _id de la base de datos, por tanto req.user.id me devolvera es el _id
         next();
     } catch (error) {
-        return res.status(403).json({ error: 'Invalid token' });
+        return res.redirect('/login.html'); 
     }
 };
 

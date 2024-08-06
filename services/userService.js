@@ -52,7 +52,6 @@ exports.loginUser = async (email, password) => {
         throw new Error('Error logging in user in service');
     }
 };
-
 exports.getAllUsers = async () => {
     return await User.find({}, { password: 0, __v: 0, _id: 0 }).lean();
   };
@@ -89,9 +88,9 @@ exports.deleteAllUsers = async () => {
 };
 
 // Obtener un usuario por ID
-exports.getUserBy_Id = async (id) => {
+exports.getUserBy_Id = async (_id) => {
     try {
-        const user = await User.findOne({ id }, { password: 0, __v: 0 });
+        const user = await User.findOne({ _id }, { password: 0, __v: 0 });
         if (!user) {
             throw new Error('User not found');
         }
@@ -111,7 +110,7 @@ exports.getBorrowedBooks = async (id) => {
         return user.borrowedBooks;
     } catch (error) {
         console.error('Error getting borrowed books in service:', error.message);
-        throw new Error('Error getting borrowed books in service');
+        throw new Error(`Error getting borrowed books in service: ${error.message}`);
     }
 };
 
@@ -153,3 +152,66 @@ exports.borrowBook = async (userId, bookIsbn) => {
         session.endSession();
     }
 };
+// Función para buscar un préstamo por bookId
+exports.getLoanByBookId = async (userId, bookId) => {
+    try {
+        const user = await User.findOne({ _id: userId, 'borrowedBooks.bookId': bookId }, { 'borrowedBooks.$': 1 }).exec();
+        if (!user || !user.borrowedBooks.length) {
+            throw new Error('Préstamo no encontrado');
+        }
+        
+        return user.borrowedBooks[0];
+    } catch (error) {
+        console.error('Error buscando el préstamo:', error);
+        throw error;
+    }
+}
+
+// Función para extender el préstamo
+exports.extendLoan = async (userId, bookId) => {
+    const user = await User.findOne({ _id: userId, 'borrowedBooks.bookId': bookId }, { 'borrowedBooks.$': 1 }).exec();
+    
+    if (!user || !user.borrowedBooks.length) {
+        throw new Error('Préstamo no encontrado');
+    }
+
+    const loan = user.borrowedBooks[0]; // Asume que solo hay un préstamo con el bookId proporcionado
+
+    // Verificar el número de extensiones
+    if (loan.extensionCount >= 2) {
+        throw new Error('Límite de extensiones alcanzado');
+    }
+
+    // Ampliar el plazo del préstamo
+    loan.returnDate = new Date(loan.returnDate.getTime() + 15 * 24 * 60 * 60 * 1000);
+    loan.extensionCount = (loan.extensionCount || 0) + 1; // Incrementar el conteo de extensiones
+
+    // Guardar el usuario actualizado
+    await User.updateOne(
+        { _id: userId, 'borrowedBooks.bookId': bookId },
+        { $set: { 'borrowedBooks.$.returnDate': loan.returnDate, 'borrowedBooks.$.extensionCount': loan.extensionCount } }
+    );
+
+    return loan;
+}
+
+// // Extender el plazo del préstamo
+// exports.extendLoan = async (userId, loanId, newReturnDate) => {
+//     try {
+//         const user = await User.findOne({ id: userId }).exec();
+//         if (user) {
+//             const loan = user.borrowedBooks.bookId(loanId); // Busca el préstamo por ID
+//             if (loan) {
+//                 loan.returnDate = new Date(newReturnDate);
+//                 await user.save();
+//                 return user.borrowedBooks;
+//             } else {
+//                 throw new Error('Loan not found');
+//             }
+//         } else {
+//             throw new Error('User not found');
+//         }
+//     } catch (error) {
+//         throw new Error('Error extending loan: ' + error.message);
+//     }
+// }
