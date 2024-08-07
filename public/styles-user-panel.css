@@ -133,19 +133,6 @@ button:hover {
     margin: 5px 0;
 }
 
-
-
-
-footer {
-    text-align: center;
-    padding: 1rem 0;
-    background-color: var(--bg-color-header);
-    color: var(--text-color-header);
-}
-
-footer p {
-    margin: 0;
-}
 /* Estilo por defecto para los iconos SVG */
 .nav-link svg {
     stroke: #A7A295; /* Color predeterminado */

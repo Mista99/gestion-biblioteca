@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         try {
             const result = await registerUser(userData);
-            console.log("la data capturada es:", userData)
             alert('Usuario registrado exitosamente');
             form.reset();
         } catch (error) {

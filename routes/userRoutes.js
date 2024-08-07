@@ -9,6 +9,8 @@ router.post('/users', userController.createUser);
 router.post('/register', userController.registerUser);
 
 router.post('/login', userController.loginUser);
+router.get('/login', (req, res)=>{res.render('login')});
+
 router.post('/logout', userController.logOut);
 
 // Obtener todos los usuarios

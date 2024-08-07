@@ -23,9 +23,14 @@ exports.createUser = async (req, res) => {
 
 exports.registerUser = async (req, res) => {
     try {
-        const { id, name, email, password, role } = req.body;
-        const user = await userService.registerUser({ id, name, email, password, role });
-        res.status(201).send({ message: 'User registered successfully', user });
+        const { id, name, email, password, vpassword} = req.body;
+        if (password === vpassword) {
+            const user = await userService.registerUser({ id, name, email, password});
+            res.status(201).send({ message: 'User registered successfully', user });
+        }
+        else {
+            res.status(400).send({ message: 'Passwords do not match' });
+            }
     } catch (error) {
         console.error('Error registering user:', error.message);
         res.status(400).send({ error: `Error registering user: ${error.message}` });
