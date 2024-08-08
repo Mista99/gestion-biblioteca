@@ -60,15 +60,14 @@ async function registerUser(userData) {
         });
 
         if (!response.ok) {
-            throw new Error(`Error: ${response.status} ${response.statusText}`);
+            const data = await response.json();
+            throw new Error(JSON.stringify(data.errors));
         }
 
         const data = await response.json();
-        console.log('User registered successfully:', data);
         return data;
     } catch (error) {
-        console.error('Error registering user:', error.message);
-        throw new Error(`Error registering user: ${error.message}`);
+        throw new Error(error.message);
     }
 }
 
@@ -86,16 +85,13 @@ async function loginUser(userData) {
         });
 
         if (!response.ok) {
-            throw new Error(`Error: captura de erro en el front ${response.status} ${response.statusText}`);
+            throw new Error(`${response.status} ${response.statusText}`);
         }
-
         const data = await response.json();
-        console.log('User logged in successfully:', data);
         // Redirigir a la página de usuario después del inicio de sesión exitoso
         window.location.href = 'http://localhost:3000/user-panel'; 
         return data;
     } catch (error) {
-        console.error('Error logging in user:', error.message);
         throw new Error(`Error logging in user: ${error.message}`);
     }
 }

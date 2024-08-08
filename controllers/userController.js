@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
+const z = require('zod')
 
 
 const TOKEN_KEY = process.env.TOKEN_KEY;
@@ -21,19 +22,42 @@ exports.createUser = async (req, res) => {
     }
 };
 
+// Definir el esquema de usuario
+const userSchema = z.object({
+    id: z.number().min(2, "El ID es requerido"),
+    name: z.string().min(2, "El nombre es requerido"),
+    email: z.string().email("El correo electrónico no es válido"),
+    password: z.string().min(8, "La contraseña debe tener al menos 8 caracteres"),
+    vpassword: z.string().min(8, "La verificación de contraseña debe tener al menos 8 caracteres")
+  }).refine(data => data.password === data.vpassword, {
+    message: "Las contraseñas no coinciden",
+    path: ["vpassword"],
+  });
+  
+  // Función para registrar usuario
+// Función para registrar usuario
 exports.registerUser = async (req, res) => {
     try {
-        const { id, name, email, password, vpassword} = req.body;
-        if (password === vpassword) {
-            const user = await userService.registerUser({ id, name, email, password});
-            res.status(201).send({ message: 'User registered successfully', user });
-        }
-        else {
-            res.status(400).send({ message: 'Passwords do not match' });
-            }
+        // Valida y analiza los datos del cuerpo de la solicitud
+        req.body.id = Number(req.body.id);
+        const userData = userSchema.parse(req.body);
+        const { id, name, email, password } = userData;
+
+        // Registra al usuario
+        const user = await userService.registerUser({ id, name, email, password });
+        res.status(201).json({ message: 'User registered successfully', user });
     } catch (error) {
-        console.error('Error registering user:', error.message);
-        res.status(400).send({ error: `Error registering user: ${error.message}` });
+        if (error instanceof z.ZodError) {
+            // Mapea los errores de Zod a un formato adecuado sin el path
+            const formattedErrors = error.issues.map(issue => ({
+                message: issue.message
+            }));
+            return res.status(400).json({ errors: formattedErrors });
+        }
+
+        // Maneja otros errores
+        console.error('Error registrando usuario:', error.message);
+        res.status(500).json({ error: `Error registrando usuario: ${error.message}` });
     }
 };
 

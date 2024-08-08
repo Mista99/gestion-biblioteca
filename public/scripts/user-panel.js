@@ -123,8 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
         renderBooks(filteredBooks);
     });
     // Función para mostrar mensajes
-   // Función para mostrar mensajes
-    // Función para mostrar mensajes
     function showMessage(type, message) {
         const messageElement = document.getElementById(`${type}-message`);
         const messageDiv = messageElement.querySelector('.alert-message'); // Selecciona el div con clase alert-message

@@ -32,7 +32,7 @@ exports.registerUser = async (userData) => {
         return newUser;
     } catch (error) {
         console.error('Error registering user in service:', error.message);
-        throw new Error('Error registering user in service');
+        throw new Error(error.message);
     }
 };
 exports.loginUser = async (email, password) => {
