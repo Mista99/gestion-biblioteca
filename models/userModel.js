@@ -9,29 +9,36 @@ const borrowedBookSchema = new Schema({
     returnDate: { 
         type: Date, 
         default: function() {
-            return new Date(this.borrowedDate.getTime() + 15 * 24 * 60 * 60 * 1000);
+            return new Date(this.borrowedDate.getTime() + 15 * 24 * 60 * 60 * 1000); // +15 días
         }
     },
-    extensionCount: { type: Number, default: 0 } // Nuevo campo para contar las extensiones
+    extensionCount: { type: Number, default: 0 }
 }, { _id: false });
 
 const userSchema = new Schema({
-    id: { type: String, required: true, unique: true }, // cédula del usuario
-    name: { type: String, required: true },
+    id: { type: String, required: true, unique: true },
+    name: { type: String, required: true },  
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: false },
-    role: { type: String, enum: ['user', 'admin'], default: 'user' }, // nuevo campo role
-    borrowedBooks: { type: [borrowedBookSchema], default: [] } // nuevo campo borrowedBooks
+    password: { type: String, required: false }, // Contraseña no requerida al principio
+    role: { type: String, enum: ['user', 'admin'], default: 'user' },
+    borrowedBooks: { type: [borrowedBookSchema], default: [] }
 });
 
+// Hook pre-save para hashear la contraseña y asignar una por defecto si no se proporciona
 userSchema.pre('save', async function(next) {
-    if (this.isModified('password') || this.isNew) {
-        this.password = await bcrypt.hash(this.password, 10);
+    try {
+        if (this.isModified('password') || this.isNew) {
+            if (!this.password) {
+                this.password = 'defaultPassword123'; // Contraseña por defecto
+            }
+            this.password = await bcrypt.hash(this.password, 10); // Hashea la contraseña
+        }
+        next();
+    } catch (err) {
+        next(err);
     }
-    next();
 });
 
 const User = mongoose.model('User', userSchema);
-
 
 module.exports = User;

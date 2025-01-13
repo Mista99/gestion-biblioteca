@@ -10,8 +10,7 @@ const authenticateToken = (req, res, next) => {
     console.log("el token es (auth.js)", token)
 
     if (!token) {
-
-        return res.redirect('/login.html'); 
+        return res.redirect('/api/login'); 
     }
 
     try {
@@ -20,7 +19,7 @@ const authenticateToken = (req, res, next) => {
         console.log("verificando el req.user.id (auth): ", req.user.id)//cel token fue codificado con el _id de la base de datos, por tanto req.user.id me devolvera es el _id
         next();
     } catch (error) {
-        return res.redirect('/login.html'); 
+        return res.redirect('/api/login'); 
     }
 };
 

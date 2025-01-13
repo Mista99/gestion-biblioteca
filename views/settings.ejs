@@ -1,0 +1,83 @@
+<%- include('templates/header-us-panel'); -%>
+<!-- <link rel="stylesheet" href="/styles-login.css"> -->
+</head>
+<%- include('templates/main-menu'); -%>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <!-- Panel Header -->
+            <div class="text-center mb-4">
+                <h2>Configuración de Usuario</h2>
+                <p class="text-muted">Actualiza tu información personal</p>
+            </div>
+            <!-- Card: Cambiar Nombre -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Cambiar Nombre</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">Nombre Actual</label>
+                            <input type="text" class="form-control" id="userName" value="--" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newUserName" class="form-label">Nuevo Nombre</label>
+                            <input type="text" class="form-control" id="newUserName" placeholder="Introduce tu nuevo nombre">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Card: Cambiar Contraseña -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Cambiar Contraseña</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">Contraseña Actual</label>
+                            <input type="password" class="form-control" id="currentPassword" placeholder="Introduce tu contraseña actual">
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">Nueva Contraseña</label>
+                            <input type="password" class="form-control" id="newPassword" placeholder="Introduce una nueva contraseña">
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-control" id="confirmPassword" placeholder="Confirma tu nueva contraseña">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Card: Cambiar Correo Electrónico -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Cambiar Correo Electrónico</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="mb-3">
+                            <label for="currentEmail" class="form-label">Correo Electrónico Actual</label>
+                            <input type="email" class="form-control" id="currentEmail" value="--" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newEmail" class="form-label">Nuevo Correo Electrónico</label>
+                            <input type="email" class="form-control" id="newEmail" placeholder="Introduce tu nuevo correo electrónico">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('templates/footer'); -%>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script type="module" src="/scripts/user-settings.js"></script>
+</body>
+</html>

@@ -1,26 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú con CSS Moderno</title>
-    <link rel="stylesheet" href="./styles.css">
+<%- include('templates/head-admin-panel'); -%>
 </head>
+<%- include('templates/main-menu'); -%>
 <body>
-    <header>
-        <h1>Biblioteca virtual BiblioSoft</h1>
-    </header>
-    
-    <nav>
-        <ul class="menu">
-            <li><a href="#">Inicio</a></li>
-            <li><a href="#">Productos</a></li>
-            <li><a href="#">Servicios</a></li>
-            <li><a href="#">Acerca de</a></li>
-            <li><a href="#">Contacto</a></li>
-        </ul>
-    </nav>
-
     <main>
 
         <section class="content library-search-user">
@@ -37,7 +18,6 @@
         <section class="content library-search">
             <div>
                 <h2>Buscar libro de la Biblioteca</h2>
-                <!-- Gestión de Libros -->
             </div>
             <div class="content-list">
                 <label for="search-book">Buscar Libro</label>
@@ -47,11 +27,9 @@
             </div>
         </section>
         <section class="content library-options">
-            <h2>Opciones de la Biblioteca</h2>
-            <!-- Gestión de Libros -->
         
         <div class="option" id="book-management">
-            <h3>Gestión de Libros</h3>
+            <h2>Gestión de Libros</h2>
             <form id="book-form">
                 <label for="isbn">Isbn:</label>
                 <input type="text" id="input-isbn" name="isbn" required>
@@ -80,7 +58,8 @@
 
                 
 
-                <button id="add-book" type="submit">Agregar Libro</button>
+                <button id="add-book" type="submit" class="btn btn-primary w-50">Agregar Libro</button>
+                
             </form>
         </div>
 
@@ -104,7 +83,7 @@
                     <option value="guest">Invitado</option>
                 </select>
 
-                <button id="add-user" type="submit">Agregar Usuario</button>
+                <button id="add-user" type="submit" class="btn btn-primary w-50">Agregar Usuario</button>
             </form>
         </div>
     
@@ -116,6 +95,6 @@
     <footer>
         <p>&copy; BiblioSoft</p>
     </footer>
-    <script type="module" src="./scripts/main.js"></script>
+    <script type="module" src="../scripts/main.js"></script>
 </body>
 </html>

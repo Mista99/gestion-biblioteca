@@ -1,4 +1,5 @@
 const express = require('express');
+const userController = require('../controllers/userController');
 const userService = require('../services/userService')
 const User = require('../models/userModel');
 const bookService = require('../services/bookService')
@@ -62,10 +63,38 @@ router.put('/api/extend-loan/:bookId', authenticateToken, authorizeRole(['user',
         res.status(500).json({ error: `Error extendiendo el plazo del préstamo: ${error.message}` });
     }
 });
+router.get('/settings', authenticateToken, authorizeRole(['user', 'admin']), async (req, res) => {
+    res.render('settings', {
+    })
+});
 
 // Ruta para el panel de administrador
 router.get('/admin-panel', authenticateToken, authorizeRole(['admin']), (req, res) => {
-    res.send('Welcome to Admin Panel');
+    res.render('admin-panel', {
+    })
 });
+router.get('/api/username', authenticateToken, authorizeRole(['user', 'admin']), userController.getUserName);
+//router.get('/api/users/name', userController.getUserName);
+
+router.get('/api/useremail', authenticateToken, authorizeRole(['user', 'admin']), userController.getUserEmail);
+
+router.get('/api/users', authenticateToken, authorizeRole(['admin']), userController.getAllUsers);
+// Ruta para cambiar el nombre
+router.put('/api/users/:id/name', authenticateToken, authorizeRole(['admin']), userController.updateName);
+// Ruta para cambiar el correo electrónico
+router.put('/api/users/:id/email', authenticateToken, authorizeRole(['admin']), userController.updateEmail);
+router.delete('/api/users/:id', authenticateToken, authorizeRole(['admin']), userController.deleteUser);
+// Ruta para cambiar la contraseña
+router.put('/api/updatePassword', authenticateToken, authorizeRole(['user', 'admin']), userController.updatePassword);
+
+//----------Books--------------//
+router.post('/api/borrowBook', authenticateToken, authorizeRole(['admin']), userController.borrowBook);
+router.get('/api/borrowBook', authenticateToken, authorizeRole(['admin']), userController.getBorrowedBooks);
+
+// // Actualizar el nombre de un usuario por ID
+// router.put('/users/:id/name', userController.updateName);
+
+// // Actualizar el email de un usuario por ID
+// router.put('/users/:id/email', userController.updateEmail);
 
 module.exports = router;

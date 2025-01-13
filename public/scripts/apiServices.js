@@ -1,5 +1,5 @@
 import { listUsers, listBooks } from './config.js';
-export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail, updateBookProp, registerUser, loginUser};
+export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail, updateBookProp, registerUser, loginUser, updatePassword};
 
 // Función para cargar libros en la biblioteca
 function sendNewBook(newBook) {
@@ -89,7 +89,13 @@ async function loginUser(userData) {
         }
         const data = await response.json();
         // Redirigir a la página de usuario después del inicio de sesión exitoso
-        window.location.href = 'http://localhost:3000/user-panel'; 
+        console.log("el data role: ", data.role);
+        if (data.role === 'admin') {
+            window.location.href = '/admin-panel';
+        } else if (data.role === 'user') {
+            window.location.href = '/user-panel';
+        }
+
         return data;
     } catch (error) {
         throw new Error(`Error logging in user: ${error.message}`);
@@ -182,7 +188,30 @@ async function updateUserEmail(id, email) {
         throw error;
     }
 }
+// Función para actualizar la contraseña del usuario
+async function updatePassword(currentPassword, newPassword) {
+    try {
+        const response = await fetch('http://localhost:3000/api/updatePassword', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ currentPassword, newPassword }),
+            credentials: 'include' // Para asegurarse de enviar cookies (token de autenticación)
+        });
 
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Error updating password');
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Error updating password:', error);
+        throw error;
+    }
+}
 
 async function deleteBook(isbn) {
     try {

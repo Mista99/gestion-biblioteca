@@ -309,6 +309,25 @@ function createUserDetails(user) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('log-out').addEventListener('click', function(event) {
+        event.preventDefault();
+        
+        fetch('/api/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = './api/login'; // Redirige a la página de inicio de sesión
+            } else {
+                console.error('Error al cerrar sesión');
+            }
+        }).catch(error => {
+            console.error('Error al cerrar sesión', error);
+        });
+    });
     // Evento para añadir un nuevo usuario
     document.getElementById('add-user').addEventListener('click', () => {
         const id = document.getElementById('input-id').value;
@@ -369,6 +388,7 @@ document.getElementById('input-search-book').addEventListener('input', (event) =
     renderBooks(event.target.value);
     
 });
+
 // Cargar datos iniciales cuando el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', () => {
     getUsers()

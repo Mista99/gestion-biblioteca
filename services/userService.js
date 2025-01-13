@@ -38,6 +38,7 @@ exports.registerUser = async (userData) => {
 exports.loginUser = async (email, password) => {
     try {
         const user = await User.findOne({ email });
+        const role = user.role;
         if (!user) {
             throw new Error('Invalid email or password');
         }
@@ -45,7 +46,8 @@ exports.loginUser = async (email, password) => {
         if (!isPasswordValid) {
             throw new Error('Invalid email or password');
         }
-
+        console.log("usuario encontrado: ")
+        console.log(user)
         return user;
     } catch (error) {
         console.error('Error logging in user in service:', error.message);
@@ -71,6 +73,17 @@ exports.updatePassword = async (id, password) => {
     return await User.findByIdAndUpdate(id, { password }, { new: true });
 };
 
+exports.verifyPassword = async (user, currentPassword) => {
+    try {
+        // Comparar la contraseña ingresada por el usuario con la que está almacenada (que está cifrada)
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        return isMatch; // Retorna true si las contraseñas coinciden, de lo contrario false
+    } catch (error) {
+        console.error('Error verifying password:', error.message);
+        throw new Error('Error verifying password');
+    }
+};
+
 // Eliminar un usuario por ID
 exports.deleteUser = async (id) => {
     try {
@@ -86,7 +99,33 @@ exports.deleteUser = async (id) => {
 exports.deleteAllUsers = async () => {
     await User.deleteMany();
 };
+//obtener un usuario por Id pero solo si se autentica con el token
+exports.getUserNameById = async (userId) => {
+    try {
+        const user = await User.findById(userId); // Asegúrate de tener el modelo User importado
+        console.log("Controlador, obteniendo el nombre:")
+        console.log(user)
 
+        if (!user) {
+            throw new Error('Usuario no encontrado');
+        }
+        return user.name;
+    } catch (error) {
+        throw new Error(`Error al obtener el nombre del usuario: ${error.message}`);
+    }
+};
+//obtener el emanil del usuario pero solo si se autentica con el token
+exports.getUserEmailById = async (userId) => {
+    try {
+        const user = await User.findById(userId); // Asegúrate de tener el modelo User importado
+        if (!user) {
+            throw new Error('Usuario no encontrado');
+        }
+        return user.email;
+    } catch (error) {
+        throw new Error(`Error al obtener el correo electrónico del usuario: ${error.message}`);
+    }
+};
 // Obtener un usuario por ID
 exports.getUserBy_Id = async (_id) => {
     try {

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
             body: JSON.stringify({})
         }).then(response => {
             if (response.ok) {
-                window.location.href = './login.html'; // Redirige a la página de inicio de sesión
+                window.location.href = './api/login'; // Redirige a la página de inicio de sesión
             } else {
                 console.error('Error al cerrar sesión');
             }
@@ -55,32 +55,37 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/api/user-loans')
             .then(response => response.json())
             .then(data => {
-                userLoansContainer.innerHTML = '';
-                data.borrowedBooks.forEach(loan => {
-                    const loanElement = document.createElement('div');
-                    loanElement.classList.add('loan');
-                    loanElement.innerHTML = `
-                        <h5>${loan.bookId}</h5>
-                        <h5>${loan.title}</h5>
-                        <p>Fecha de préstamo: ${formatDate(loan.borrowedDate)}</p>
-                        <p>Fecha de vencimiento: ${formatDate(loan.returnDate)}</p>
-                        <button class="btn btn-primary extend-loan" data-loan-id="${loan.bookId}" data-user-id="">Ampliar Plazo</button>
-                    `;
-                    userLoansContainer.appendChild(loanElement);
-                });
-
-                // Añadir eventos a los botones de ampliar plazo
-                const extendButtons = document.querySelectorAll('.extend-loan');
-                extendButtons.forEach(button => {
-                    button.addEventListener('click', function() {
-                        const loanId = this.getAttribute('data-loan-id');
-
-                        extendLoan(loanId);
+                if (data && Array.isArray(data.borrowedBooks) && data.borrowedBooks.length > 0) {
+                    userLoansContainer.innerHTML = ''; // Limpiar el contenedor
+                    data.borrowedBooks.forEach(loan => {
+                        const loanElement = document.createElement('div');
+                        loanElement.classList.add('loan');
+                        loanElement.innerHTML = `
+                            <h5>${loan.bookId}</h5>
+                            <h5>${loan.title}</h5>
+                            <p>Fecha de préstamo: ${formatDate(loan.borrowedDate)}</p>
+                            <p>Fecha de vencimiento: ${formatDate(loan.returnDate)}</p>
+                            <button class="btn btn-primary extend-loan" data-loan-id="${loan.bookId}" data-user-id="">Ampliar Plazo</button>
+                        `;
+                        userLoansContainer.appendChild(loanElement);
                     });
-                });
+    
+                    // Añadir eventos a los botones de ampliar plazo
+                    const extendButtons = document.querySelectorAll('.extend-loan');
+                    extendButtons.forEach(button => {
+                        button.addEventListener('click', function() {
+                            const loanId = this.getAttribute('data-loan-id');
+                            extendLoan(loanId);
+                        });
+                    });
+                } else {
+                    // Si no hay préstamos o el array está vacío
+                    userLoansContainer.innerHTML = '<h5>No tiene préstamos actualmente</h5>';
+                }
             })
             .catch(error => console.error('Error fetching user loans:', error));
     }
+    
 
     // Evento para ver préstamos
     loansTab.addEventListener('click', function(event) {

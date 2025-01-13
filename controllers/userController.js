@@ -84,7 +84,8 @@ exports.loginUser = async (req, res) => {
                 sameSite: 'None',  // La cookie se envía en solicitudes entre sitios
                 maxAge: 24 * 60 * 60 * 1000 // Duración de la cookie: 24 horas
             });
-            res.status(200).json({ message: 'User authenticated successfully', userId: user._id });
+            res.status(200).json({ message: 'User authenticated successfully', role: user.role });
+            
         } else {
             res.status(400).json({ error: 'Invalid email or password' });
         }
@@ -111,6 +112,31 @@ exports.getAllUsers = async (req, res) => {
     } catch (error) {
         console.error('Error getting users:', error.message);
         res.status(500).json({ error: 'Error getting users' });
+    }
+};
+// Controlador para obtener el nombre del usuario
+exports.getUserName = async (req, res) => {
+    try {
+        const userId = req.user.id; // Asegúrate de que el middleware `authenticateToken` agregue el userId al request
+        console.log("userId: ", userId)
+        const userName = await userService.getUserNameById(userId);
+        console.log("Controlador, obteniendo el nombre:")
+        console.log(userName)
+
+        res.status(200).json({ name: userName });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Controlador para obtener el correo electrónico del usuario
+exports.getUserEmail = async (req, res) => {
+    try {
+        const userId = req.user.id; // Asegúrate de que el middleware `authenticateToken` agregue el userId al request
+        const userEmail = await userService.getUserEmailById(userId);
+        res.status(200).json({ email: userEmail });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -149,6 +175,41 @@ exports.updateEmail = async (req, res) => {
     } catch (error) {
         console.error('Error updating email:', error.message);
         res.status(500).json({ error: 'Error updating email' });
+    }
+};
+
+exports.updatePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        // Verifica que se hayan proporcionado ambas contraseñas
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ error: 'Both current and new passwords are required' });
+        }
+
+        // Obtener el ID del usuario desde el token de autenticación
+        const userId = req.user.id;  // req.user.id se debe haber asignado al verificar el token
+        const user = await userService.getUserById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Verificar si la contraseña actual es correcta
+        const isMatch = await userService.verifyPassword(user, currentPassword);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Incorrect current password' });
+        }
+
+        // Actualizar la contraseña
+        const updatedUser = await userService.updatePassword(userId, newPassword);
+        if (!updatedUser) {
+            return res.status(500).json({ error: 'Error updating password' });
+        }
+
+        res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Error updating password:', error.message);
+        res.status(500).json({ error: 'Error updating password' });
     }
 };
 
