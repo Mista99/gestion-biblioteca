@@ -28,16 +28,18 @@ const userSchema = new Schema({
 userSchema.pre('save', async function(next) {
     try {
         if (this.isModified('password') || this.isNew) {
-            if (!this.password) {
-                this.password = 'defaultPassword123'; // Contraseña por defecto
+            // Verificar si la contraseña ya está hasheada
+            const isHashed = this.password.startsWith('$2b$'); // Comprobar si es un hash de bcrypt
+            if (!isHashed) {
+                this.password = await bcrypt.hash(this.password, 10); // Hashear solo si no está hasheada
             }
-            this.password = await bcrypt.hash(this.password, 10); // Hashea la contraseña
         }
         next();
     } catch (err) {
         next(err);
     }
 });
+
 
 const User = mongoose.model('User', userSchema);
 

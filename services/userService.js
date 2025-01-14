@@ -70,9 +70,74 @@ exports.updateEmail = async (id, email) => {
 
 // Actualizar la contraseña de usuario
 exports.updatePassword = async (id, password) => {
+    console.log("-----Entrnado a userService-----")
     return await User.findByIdAndUpdate(id, { password }, { new: true });
 };
+//------------------actuializar datos solo con autenticacion:------------------------------//
+// Función para actualizar el nombre de usuario
+exports.putUserName = async (userId, newName) => {
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('Usuario no encontrado.');
+        }
+        user.name = newName;
+        await user.save();
+    } catch (error) {
+        throw new Error('Error actualizando el nombre de usuario.');
+    }
+  };
+  
+  // Función para actualizar el correo electrónico
+exports.putUserEmail = async (userId, newEmail) => {
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('Usuario no encontrado.');
+        }
+  
+        user.email = newEmail;
+        await user.save();
+    } catch (error) {
+        throw new Error('Error actualizando el correo electrónico.');
+    }
+  };
+  
+  // Función para actualizar la contraseña
+  exports.putUserPassword = async (userId, newPassword) => {
+    try {
+        console.log("--------------Entrando en putUserPassword (userService)-----------------");
+        console.log("ID del usuario:", userId);
+        console.log("Nueva contraseña recibida:", newPassword);
 
+        const user = await User.findById(userId);
+        if (!user) {
+            console.error('Usuario no encontrado.');
+            throw new Error('Usuario no encontrado.');
+        }
+        
+        console.log("Usuario encontrado:", user);
+
+        if (!newPassword) {
+            console.error('Contraseña nueva no válida.');
+            throw new Error('Contraseña nueva no válida.');
+        }
+
+        console.log("-----Hasheando la nueva contraseña-----");
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        console.log("Contraseña hasheada:", hashedPassword);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        console.log("Contraseña actualizada correctamente para el usuario:", userId);
+    } catch (error) {
+        console.error('Error en putUserPassword:', error);
+        throw new Error('Error actualizando la contraseña.');
+    }
+};
+
+//-------------------------------------------------------------------------------------//
 exports.verifyPassword = async (user, currentPassword) => {
     try {
         // Comparar la contraseña ingresada por el usuario con la que está almacenada (que está cifrada)

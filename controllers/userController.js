@@ -139,7 +139,71 @@ exports.getUserEmail = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+//------------------actuializar datos solo con autenticacion:------------------------------//
+// Actualizar el nombre de usuario
+exports.putName = async (req, res) => {
+    try {
+        const userId = req.user.id; // Extraemos el id desde el token
+        console.log("el usereId es: ", userId);
+        const user = await userService.getUserBy_Id(userId);
+        console.log("el id de usuario es: ", user.id)
+        const { newName } = req.body;
+        const nName = newName.name;
+        console.log("leyendo el newName: ", newName);
 
+        if (!newName) {
+            return res.status(400).json({ message: 'El nuevo nombre es requerido.' });
+        }
+
+        await userService.updateName(user.id, nName);
+        res.status(200).json({ message: 'Nombre de usuario actualizado con éxito.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error actualizando el nombre de usuario.', error });
+    }
+};
+
+// Actualizar el correo electrónico
+exports.putEmail = async (req, res) => {
+    try {
+        console.log("--------------ingresando al controlador del correo-------------")
+        const userId = req.user.id;
+        const user = await userService.getUserBy_Id(userId);
+        console.log("el id de usuario es: ", user.id)
+        const { newEmail } = req.body;
+        console.log("leyendo el newEmail: ", newEmail.email);
+
+        if (!newEmail) {
+            return res.status(400).json({ message: 'El nuevo correo electrónico es requerido.' });
+        }
+
+        await userService.updateEmail(user.id, newEmail.email);
+        res.status(200).json({ message: 'Correo electrónico actualizado con éxito.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error actualizando el correo electrónico.', error });
+    }
+};
+
+// Actualizar la contraseña
+exports.putPassword = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const user = await userService.getUserBy_Id(userId);
+        console.log("------el id de usuario es: (PASSWORD) ------ ", user.id)
+
+        const { newPassword } = req.body;
+        console.log("leyendo el newPassword: ", newPassword);
+
+        if (!newPassword) {
+            return res.status(400).json({ message: 'La nueva contraseña es requerida.' });
+        }
+
+        await userService.putUserPassword(userId, newPassword);
+        res.status(200).json({ message: 'Contraseña actualizada con éxito.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error actualizando la contraseña.', error });
+    }
+};
+//----------------------------------------------------------------------------------//
 // Actualizar el nombre de un usuario por ID
 exports.updateName = async (req, res) => {
     try {

@@ -1,4 +1,4 @@
-import { updateUserEmail, updateUserName, updatePassword, deleteUser } from './apiServices.js';
+import { putUserName, putUserEmail, putUserPassword, deleteUser } from './apiServices.js';
 async function getUserName() {
     const url = '/api/username'; // La URL correcta para obtener el nombre del usuario
 
@@ -60,7 +60,7 @@ async function getUserEmail() {
         console.error('Hubo un error:', error.message);
     }
 }
-const updateUserNameForm = document.querySelector('form'); // Selecciona el formulario de "Cambiar Nombre"
+const updateUserNameForm = document.getElementById('updateUserNameForm'); // Selecciona el formulario de "Cambiar Nombre"
 
 updateUserNameForm.addEventListener('submit', async (event) => {
     event.preventDefault(); // Evita el envío normal del formulario
@@ -71,36 +71,45 @@ updateUserNameForm.addEventListener('submit', async (event) => {
         const userNameData = { name: newUserName };
         try {
             // Aquí llamamos a la función de la API que actualizará el nombre
-            const response = await updateUserName(userNameData);
+            const response = await putUserName(userNameData);
             console.log('Nombre actualizado:', response);
         } catch (error) {
             console.error('Error al actualizar el nombre:', error);
         }
     }
 });
-const updateUserEmailForm = document.querySelector('form'); // Selecciona el formulario de "Cambiar Correo Electrónico"
+const updateUserEmailForm = document.getElementById('updateUserEmailForm'); 
 
-updateUserEmailForm.addEventListener('submit', async (event) => {
-    event.preventDefault(); // Evita el envío normal del formulario
+if (updateUserEmailForm) {
+    console.log("Formulario de actualización de correo encontrado");
 
-    const newEmail = document.getElementById('newEmail').value; // Captura el nuevo correo electrónico
+    updateUserEmailForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Evita el envío normal del formulario
+        console.log("Evento submit detectado");
 
-    if (newEmail) {
-        const userEmailData = { email: newEmail };
-        try {
-            // Aquí llamamos a la función de la API que actualizará el correo
-            const response = await updateUserEmail(userEmailData);
-            console.log('Correo actualizado:', response);
-        } catch (error) {
-            console.error('Error al actualizar el correo:', error);
+        const newEmail = document.getElementById('newEmail').value; // Captura el nuevo correo electrónico
+        console.log("Nuevo correo:", newEmail);
+
+        if (newEmail) {
+            const userEmailData = { email: newEmail };
+            try {
+                console.log("Llamando a la función putUserEmail con:", userEmailData);
+                const response = await putUserEmail(userEmailData);
+                console.log('Correo actualizado:', response);
+            } catch (error) {
+                console.error('Error al actualizar el correo:', error);
+            }
         }
-    }
-});
-const updatePasswordForm = document.querySelector('form'); // Selecciona el formulario de "Cambiar Contraseña"
+    });
+} else {
+    console.error("Formulario de actualización de correo NO encontrado");
+}
+
+const updatePasswordForm = document.getElementById('updatePasswordForm'); // Selecciona el formulario de "Cambiar Contraseña"
 
 updatePasswordForm.addEventListener('submit', async (event) => {
     event.preventDefault(); // Evita el envío normal del formulario
-
+    console.log("ingresnadod al evento")
     const currentPassword = document.getElementById('currentPassword').value; // Captura la contraseña actual
     const newPassword = document.getElementById('newPassword').value; // Captura la nueva contraseña
     const confirmPassword = document.getElementById('confirmPassword').value; // Captura la confirmación de la nueva contraseña
@@ -114,8 +123,9 @@ updatePasswordForm.addEventListener('submit', async (event) => {
         const passwordData = { currentPassword, newPassword };
         try {
             // Aquí llamamos a la función de la API que actualizará la contraseña
-            const response = await updatePassword(passwordData);
-            console.log('Contraseña actualizada:', response);
+            console.log("llamando a la API")
+            const response = await putUserPassword(passwordData);
+            console.log('Contraseña actualizadaaaaaaaaaaa:', response);
         } catch (error) {
             console.error('Error al actualizar la contraseña:', error);
         }

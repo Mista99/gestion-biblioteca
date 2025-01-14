@@ -1,5 +1,5 @@
 import { listUsers, listBooks } from './config.js';
-export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail, updateBookProp, registerUser, loginUser, updatePassword};
+export { sendNewBook, sendNewUser, getBooks, getUsers, deleteBook, deleteUser, updateUserName, updateUserEmail, updateBookProp, registerUser, loginUser, updatePassword, putUserName, putUserEmail, putUserPassword};
 
 // Función para cargar libros en la biblioteca
 function sendNewBook(newBook) {
@@ -188,6 +188,88 @@ async function updateUserEmail(id, email) {
         throw error;
     }
 }
+//------------------actuializar datos solo con autenticacion:------------------------------//
+async function putUserName(newName) {
+    const url = '/api/username';
+
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Incluir cookies en la solicitud
+            body: JSON.stringify({ newName }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        alert(result.message); // Mostrar mensaje de éxito
+        return result;
+
+    } catch (error) {
+        console.error('Hubo un error al actualizar el nombre de usuario:', error.message);
+    }
+}
+
+async function putUserEmail(newEmail) {
+    const url = '/api/useremail';
+
+    try {
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Incluir cookies en la solicitud
+            body: JSON.stringify({ newEmail }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        alert(result.message); // Mostrar mensaje de éxito
+        return result;
+
+    } catch (error) {
+        console.error('Hubo un error al actualizar el correo electrónico:', error.message);
+    }
+}
+
+async function putUserPassword(passwordData) {
+    const url = '/api/userpass';
+
+    try {
+        console.log("ingresando al putfecth")
+        console.log(passwordData)
+        const response = await fetch(url, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Incluir cookies en la solicitud
+            body: JSON.stringify(passwordData),
+        });
+
+        if (!response.ok) {
+            throw new Error(`${response.status} ${response.statusText}`);
+        }
+
+        const result = await response.json();
+        alert(result.message); // Mostrar mensaje de éxito
+        return result;
+
+    } catch (error) {
+        console.error('Hubo un error al actualizar la contraseña:', error.message);
+    }
+}
+
+//----------------------------------------------------------------------------------//
 // Función para actualizar la contraseña del usuario
 async function updatePassword(currentPassword, newPassword) {
     try {

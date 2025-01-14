@@ -83,10 +83,17 @@ router.get('/api/users', authenticateToken, authorizeRole(['admin']), userContro
 router.put('/api/users/:id/name', authenticateToken, authorizeRole(['admin']), userController.updateName);
 // Ruta para cambiar el correo electrónico
 router.put('/api/users/:id/email', authenticateToken, authorizeRole(['admin']), userController.updateEmail);
-router.delete('/api/users/:id', authenticateToken, authorizeRole(['admin']), userController.deleteUser);
 // Ruta para cambiar la contraseña
 router.put('/api/updatePassword', authenticateToken, authorizeRole(['user', 'admin']), userController.updatePassword);
+router.delete('/api/users/:id', authenticateToken, authorizeRole(['admin']), userController.deleteUser);
+//new puts sin fallos de seguridad
+// Ruta para cambiar el nombre
 
+//------------------actuializar datos solo con autenticacion:------------------------------//
+router.put('/api/username', authenticateToken, authorizeRole(['user', 'admin']), userController.putName);
+router.put('/api/useremail', authenticateToken, authorizeRole(['user', 'admin']), userController.putEmail);
+router.put('/api/userpass', authenticateToken, authorizeRole(['user', 'admin']), userController.putPassword);
+//----------------------------------------------------------------------------------//
 //----------Books--------------//
 router.post('/api/borrowBook', authenticateToken, authorizeRole(['admin']), userController.borrowBook);
 router.get('/api/borrowBook', authenticateToken, authorizeRole(['admin']), userController.getBorrowedBooks);
