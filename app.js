@@ -41,26 +41,6 @@ app.use('/api', userRoutes); //la palabra api queda para todas las rutas que se 
 app.use('/api', bookRoutes);
 // Rutas protegidas
 app.use(protectedRoutes);
-
-const bcrypt = require('bcrypt');
-
-const hashedPassword = '$2b$10$IxlXqG5hHXBb.3vTnOZ3SOK6KD8dhWI7.ajgDypUftM0ldVz67SxK'; // El hash
-const userPassword = 'SecurePass456!'; // La contraseña que quieres verificar
-
-bcrypt.compare(userPassword, hashedPassword, (err, result) => {
-    if (err) {
-        console.error('Error al comparar las contraseñas:', err);
-        return;
-    }
-
-    if (result) {
-        console.log('Las contraseñas coinciden');
-    } else {
-        console.log('Las contraseñas NO coinciden');
-    }
-});
-
-
 app.listen(port, () => {
     console.log(`Servidor escuchando en http://localhost:${port}`);
 });
